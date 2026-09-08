@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeLine | Live Rescue & Relief Tracker</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+
+  <!-- Navigation Header -->
+  <header class="bg-slate-950 border-b border-slate-800 px-6 py-3.5 flex justify-between items-center sticky top-0 z-30 shadow-md">
+    <div class="flex items-center space-x-3">
+      <a href="/" class="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white font-bold shadow-lg shadow-red-600/30">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </a>
+      <div>
+        <span class="text-base font-bold tracking-tight text-white leading-none block">LifeLine Rescue Tracker</span>
+        <span class="text-[10px] text-slate-400 font-medium">Real-Time Rescue Progress & Location Monitor</span>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-2">
+      <span class="text-xs font-semibold text-slate-400">Incident Code:</span>
+      <span id="incidentCodeDisplay" class="font-mono text-sm font-bold text-yellow-300 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">INC-2026-0001</span>
+    </div>
+  </header>
+
+  <!-- Widescreen Tracker Layout -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8 space-y-6">
+
+    <!-- Top Status Banner Card -->
+    <div class="bg-gradient-to-r from-red-600 via-red-700 to-amber-600 text-white rounded-2xl p-6 shadow-2xl relative overflow-hidden flex flex-wrap justify-between items-center gap-4 border border-red-500/30">
+      <div class="space-y-1">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-200 flex items-center gap-1.5">
+          <i class="fa-solid fa-satellite-dish animate-pulse"></i> Emergency Rescue Status
+        </span>
+        <h2 id="etaTitle" class="text-3xl sm:text-4xl font-extrabold tracking-tight">ETA: Calculating...</h2>
+        <p id="etaSub" class="text-xs text-amber-100 font-medium">Awaiting response unit dispatch or vehicle location lock.</p>
+      </div>
+      
+      <div class="bg-slate-950/40 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center min-w-[160px]">
+        <div class="text-[10px] uppercase font-bold text-amber-200">Rescue Distance</div>
+        <div id="distDisplay" class="text-3xl font-black text-white">0.0 km</div>
+        <div id="unitCodeDisplay" class="text-xs font-mono font-semibold text-yellow-300 mt-1">Dispatch Pending</div>
+      </div>
+    </div>
+
+    <!-- Rescue Progress Stepper -->
+    <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Rescue Response Progress</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+        <div class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 font-semibold flex flex-col items-center gap-1.5">
+          <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+          <span>1. Report Received</span>
+        </div>
+        <div class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 font-semibold flex flex-col items-center gap-1.5">
+          <i class="fa-solid fa-brain text-emerald-400 text-lg"></i>
+          <span>2. Assessed by AI</span>
+        </div>
+        <div id="step3" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-500 font-medium flex flex-col items-center gap-1.5">
+          <i class="fa-solid fa-truck-dispatch text-slate-600 text-lg"></i>
+          <span>3. Rescue Team Sent</span>
+        </div>
+        <div id="step4" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-500 font-medium flex flex-col items-center gap-1.5">
+          <i class="fa-solid fa-flag-checkered text-slate-600 text-lg"></i>
+          <span>4. Rescue Team Arrived</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Map -->
+    <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow-xl space-y-3">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-300">
+        <span class="flex items-center gap-2"><i class="fa-solid fa-map-location-dot text-red-500"></i> Live Trajectory & Map View</span>
+        <span id="lastUpdatedText" class="text-[11px] font-normal text-slate-400">Updating live...</span>
+      </div>
+      <div id="trackMap" class="h-96 w-full rounded-xl border border-slate-800 shadow-inner z-10"></div>
+    </div>
+
+    <!-- Incident Details & Demands Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-clipboard-list text-blue-400"></i> Reported Situation Details
+        </h4>
+        <div id="incidentDesc" class="text-xs text-slate-200 leading-relaxed font-medium bg-slate-950 p-4 rounded-xl border border-slate-800">
+          Loading report description...
+        </div>
+      </div>
+
+      <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-boxes-packing"></i> Requested Supplies & Items
+        </h4>
+        <div id="demandsText" class="text-xs text-amber-200 leading-relaxed font-mono bg-amber-950/40 p-4 rounded-xl border border-amber-800/60">
+          Loading requested items...
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/track.js"></script>
+</body>
+</html>

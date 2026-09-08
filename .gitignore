@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Temporary uploads & databases
+uploads/*
+!uploads/.gitkeep
+*.db
+*.db-shm
+*.db-wal
+
+# Datasets
+CrisisMMD_v2.0/
+
+# OS / Environment files
+.DS_Store
+Thumbs.db
+~$*

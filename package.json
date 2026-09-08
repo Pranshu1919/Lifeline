@@ -1,0 +1,17 @@
+{
+  "name": "lifeline-disaster-response-backend",
+  "version": "2.0.0",
+  "description": "Full-Stack Node.js & Express Backend for LifeLine Smart Disaster Response System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^6.0.1",
+    "ws": "^8.18.0"
+  }
+}

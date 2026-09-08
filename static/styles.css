@@ -1,0 +1,50 @@
+/* Custom LifeLine Styles */
+
+.cat-btn.active {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+}
+
+.cat-btn.active i {
+  color: #ffffff !important;
+}
+
+/* Custom Leaflet Map Pin Styles */
+.leaflet-popup-content-wrapper {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid #334155 !important;
+}
+
+.leaflet-popup-tip {
+  background: #1e293b !important;
+}
+
+/* Severity Tag Colors */
+.severity-5 {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.severity-4 {
+  background-color: #f97316;
+  color: #ffffff;
+}
+
+.severity-3 {
+  background-color: #f59e0b;
+  color: #ffffff;
+}
+
+.severity-2 {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.severity-1 {
+  background-color: #10b981;
+  color: #ffffff;
+}

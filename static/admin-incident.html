@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeLine | Disaster Incident Detail & Resource Manager</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="bg-slate-950 border-b border-slate-800 px-6 py-3.5 flex justify-between items-center sticky top-0 z-30 shadow-md">
+    <div class="flex items-center space-x-3">
+      <a href="/admin" class="text-slate-400 hover:text-white text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+        <i class="fa-solid fa-arrow-left"></i> Back to Control Dashboard
+      </a>
+      <div>
+        <h1 class="text-base font-bold text-white flex items-center gap-2">
+          Incident Detail: <span id="codeTitle" class="font-mono text-yellow-300">INC-2026-0001</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <a id="trackIncidentBtn" href="/track" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow transition flex items-center gap-1.5">
+        <i class="fa-solid fa-location-crosshairs"></i> Track Live Rescue 📍
+      </a>
+      <span id="severityBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+        Severity Level 4.7 / 5.0
+      </span>
+      <span id="statusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">
+        QUEUED
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Grid Container -->
+  <main class="flex-grow p-6 max-w-7xl w-full mx-auto space-y-6">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Disaster Details, Media & Map (8 Cols) -->
+      <div class="lg:col-span-8 space-y-6">
+
+        <!-- Situation Description & Needs Card -->
+        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-4 shadow-xl">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-align-left text-blue-400"></i> Situation Description
+            </h3>
+            <p id="descriptionText" class="text-sm text-slate-200 mt-1 leading-relaxed bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+              Loading incident description...
+            </p>
+          </div>
+
+          <!-- Specific Demands Box -->
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-boxes-packing"></i> Requested Supplies & Items
+            </h3>
+            <p id="demandsText" class="text-xs font-mono text-amber-200 mt-1 leading-relaxed bg-amber-950/40 p-3.5 rounded-xl border border-amber-800/60">
+              Loading requested items...
+            </p>
+          </div>
+
+          <!-- Services Needed Chips -->
+          <div class="flex flex-wrap gap-2 text-xs pt-1">
+            <span class="text-slate-400 font-semibold self-center">Services Requested:</span>
+            <div id="needsChipsContainer" class="flex flex-wrap gap-1.5">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene Media Player -->
+        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-3 shadow-xl">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-photo-film text-purple-400"></i> Attached Scene Photos & Videos
+          </h3>
+          <div id="mediaBox" class="bg-slate-900 rounded-xl p-3 flex justify-center items-center min-h-[220px]">
+            <span class="text-xs text-slate-500">No photos or videos attached.</span>
+          </div>
+        </div>
+
+        <!-- GIS Interactive Incident Location Map -->
+        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-4 space-y-3 shadow-xl">
+          <div class="flex justify-between items-center text-xs font-bold text-slate-300">
+            <span><i class="fa-solid fa-map-pin text-red-500"></i> Incident Location & Map View</span>
+            <span id="coordsDisplay" class="font-mono text-slate-400">Lat: 28.6752 | Lng: 77.5020</span>
+          </div>
+          <div id="detailMap" class="h-72 w-full rounded-xl border border-slate-800 z-10"></div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Resource Allocation Control Panel (4 Cols) -->
+      <div class="lg:col-span-4 space-y-6">
+
+        <!-- Resource Allocation Control Panel -->
+        <div class="bg-slate-950 rounded-2xl border border-amber-500/40 p-5 space-y-4 shadow-2xl">
+          <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-base">
+              <i class="fa-solid fa-sliders"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Resource Allocation Control</h3>
+              <p class="text-[10px] text-slate-400">Manual Assignment & Automated Dispatch</p>
+            </div>
+          </div>
+
+          <!-- Currently Assigned Unit Status Card -->
+          <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1 text-xs">
+            <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider block">Assigned Response Vehicle</span>
+            <div id="assignedUnitDisplay" class="text-sm font-mono font-bold text-yellow-300">Dispatch Pending</div>
+            <div id="assignedUnitSub" class="text-[11px] text-slate-400">No vehicle currently assigned.</div>
+          </div>
+
+          <!-- Manual Allocation Selection Dropdown -->
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-slate-300">Select Response Vehicle to Assign:</label>
+            <select id="unitSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-100 text-xs px-3 py-2.5 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono">
+              <option value="">Loading response vehicles...</option>
+            </select>
+            <button id="manualAssignBtn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-truck-dispatch"></i> Manually Assign Vehicle
+            </button>
+          </div>
+
+          <div class="relative flex py-1 items-center">
+            <div class="flex-grow border-t border-slate-800"></div>
+            <span class="flex-shrink mx-2 text-[10px] text-slate-500 uppercase font-bold">OR</span>
+            <div class="flex-grow border-t border-slate-800"></div>
+          </div>
+
+          <!-- Auto-Assign Button -->
+          <button id="aiAssignBtn" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i> Auto-Assign Rescue Units
+          </button>
+
+          <div id="xaiBox" class="hidden bg-slate-900 p-3 rounded-xl border border-amber-500/30 text-xs font-mono space-y-1">
+            <div class="text-amber-300 font-bold">Allocation Rationale:</div>
+            <p id="xaiText" class="text-slate-300 text-[11px] leading-relaxed"></p>
+          </div>
+        </div>
+
+        <!-- Reporter Information Card -->
+        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-3 shadow-xl text-xs">
+          <h3 class="font-bold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+            <i class="fa-solid fa-user-shield text-blue-400"></i> Reporter Information
+          </h3>
+          <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
+            <div><span class="text-slate-400">Reporter Name:</span> <strong id="reporterName" class="text-white">Anonymous</strong></div>
+            <div><span class="text-slate-400">Phone Number:</span> <strong id="reporterPhone" class="text-yellow-300 font-mono">Not provided</strong></div>
+            <div><span class="text-slate-400">Report Time:</span> <span id="reportTime" class="text-slate-300">Just now</span></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/admin-incident.js"></script>
+</body>
+</html>

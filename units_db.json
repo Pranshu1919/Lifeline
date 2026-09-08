@@ -1,0 +1,29 @@
+[
+  {
+    "unit_id": "AMBULANCE-01",
+    "type": "Ambulance",
+    "latitude": 28.68,
+    "longitude": 77.495,
+    "capacity": 2,
+    "status": "AVAILABLE",
+    "speed": 35
+  },
+  {
+    "unit_id": "RESCUE-BOAT-01",
+    "type": "Rescue Boat",
+    "latitude": 28.671,
+    "longitude": 77.51,
+    "capacity": 4,
+    "status": "AVAILABLE",
+    "speed": 20
+  },
+  {
+    "unit_id": "FIRE-ENGINE-01",
+    "type": "Fire Engine",
+    "latitude": 28.69,
+    "longitude": 77.48,
+    "capacity": 6,
+    "status": "AVAILABLE",
+    "speed": 40
+  }
+]

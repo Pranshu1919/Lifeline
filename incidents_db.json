@@ -1,0 +1,29 @@
+[
+  {
+    "incident_id": "INC-0001",
+    "reporter_name": "Sample Reporter",
+    "description": "Flash flood water reaching 2nd floor near main market, 3 people trapped needing boat evacuation",
+    "category": "Flood",
+    "severity": 5.0,
+    "latitude": 28.6752,
+    "longitude": 77.502,
+    "image_url": null,
+    "status": "QUEUED",
+    "assigned_unit": null,
+    "timestamp": "2026-08-17T18:59:36.518888"
+  },
+  {
+    "incident_id": "INC-0002",
+    "reporter_name": "Anonymous",
+    "reporter_phone": "",
+    "description": "dfgdsygiudscjhuds9fhisduhfiydfisdifhrefherjf",
+    "category": "Fire",
+    "severity": 3.0,
+    "latitude": 28.679015,
+    "longitude": 77.49954,
+    "image_url": "/uploads/1787118818_live_video_1787138415730.webm",
+    "status": "QUEUED",
+    "assigned_unit": null,
+    "timestamp": "2026-08-19T11:23:38.180272"
+  }
+]
