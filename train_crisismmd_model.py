@@ -21,14 +21,12 @@ print("====================================================")
 print("🚀 Starting LifeLine CrisisMMD v2.0 Model Training...")
 print("====================================================")
 
-# 1. Locate TSV files
-ANNOTATIONS_DIR = r"c:\Users\Vijay\LifeLine\CrisisMMD_v2.0\CrisisMMD_v2.0\annotations"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-if not os.path.exists(ANNOTATIONS_DIR):
-    ANNOTATIONS_DIR = os.path.join(os.path.dirname(__file__) if '__file__' in locals() else '.', 'CrisisMMD_v2.0', 'CrisisMMD_v2.0', 'annotations')
+# 1. Locate TSV files
+ANNOTATIONS_DIR = os.path.join(BASE_DIR, 'CrisisMMD_v2.0', 'CrisisMMD_v2.0', 'annotations')
 
 tsv_files = glob.glob(os.path.join(ANNOTATIONS_DIR, "*.tsv"))
-# Filter out OS hidden ._ files
 tsv_files = [f for f in tsv_files if not os.path.basename(f).startswith("._")]
 
 print(f"Found {len(tsv_files)} CrisisMMD dataset TSV files:")
@@ -127,8 +125,8 @@ print("\n--- Detailed Classification Report ---")
 print(classification_report(y_test, y_pred_best))
 
 # 6. Export Trained Model Artifacts
-MODEL_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_model.pkl"
-VEC_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_vectorizer.pkl"
+MODEL_PATH = os.path.join(BASE_DIR, "crisismmd_model.pkl")
+VEC_PATH = os.path.join(BASE_DIR, "crisismmd_vectorizer.pkl")
 
 with open(MODEL_PATH, 'wb') as f:
     pickle.dump(best_model, f)

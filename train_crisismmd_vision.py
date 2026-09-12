@@ -29,8 +29,8 @@ log("====================================================")
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 log(f"Using Compute Device: {device}")
 
-# 1. Load TSV Annotations
-BASE_DIR = r"c:\Users\Vijay\LifeLine\CrisisMMD_v2.0\CrisisMMD_v2.0"
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.join(ROOT_DIR, "CrisisMMD_v2.0", "CrisisMMD_v2.0")
 ANNOTATIONS_DIR = os.path.join(BASE_DIR, "annotations")
 
 tsv_files = glob.glob(os.path.join(ANNOTATIONS_DIR, "*.tsv"))
@@ -148,7 +148,7 @@ for epoch in range(epochs):
     val_acc = val_correct / val_total
     log(f"Epoch {epoch+1}/{epochs} [{time.time()-t0:.1f}s] - Train Acc: {train_acc*100:.2f}% | Val Acc: {val_acc*100:.2f}%")
 
-AUTH_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_vision_authenticity.pt"
+AUTH_PATH = os.path.join(ROOT_DIR, "crisismmd_vision_authenticity.pt")
 torch.save(auth_model.state_dict(), AUTH_PATH)
 log(f"✅ Saved Authenticity Weights to: {AUTH_PATH}")
 
@@ -203,7 +203,7 @@ for epoch in range(epochs):
     val_acc = val_correct / val_total
     log(f"Epoch {epoch+1}/{epochs} [{time.time()-t0:.1f}s] - Train Acc: {train_acc*100:.2f}% | Val Acc: {val_acc*100:.2f}%")
 
-DMG_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_vision_damage.pt"
+DMG_PATH = os.path.join(ROOT_DIR, "crisismmd_vision_damage.pt")
 torch.save(dmg_model.state_dict(), DMG_PATH)
 
 log("====================================================")

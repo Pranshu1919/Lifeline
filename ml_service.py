@@ -24,9 +24,11 @@ app = Flask(__name__)
 # Device setup
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # 1. Load CrisisMMD NLP Model & Vectorizer
-CRISISMMD_MODEL_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_model.pkl"
-CRISISMMD_VEC_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_vectorizer.pkl"
+CRISISMMD_MODEL_PATH = os.path.join(BASE_DIR, "crisismmd_model.pkl")
+CRISISMMD_VEC_PATH = os.path.join(BASE_DIR, "crisismmd_vectorizer.pkl")
 
 crisismmd_model = None
 crisismmd_vectorizer = None
@@ -42,8 +44,8 @@ except Exception as e:
     print(f"⚠️ [ML Microservice] Error loading CrisisMMD NLP model: {e}")
 
 # 2. Load CrisisMMD PyTorch Vision Models (Authenticity & Damage Severity)
-AUTH_WEIGHTS_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_vision_authenticity.pt"
-DMG_WEIGHTS_PATH = r"c:\Users\Vijay\LifeLine\crisismmd_vision_damage.pt"
+AUTH_WEIGHTS_PATH = os.path.join(BASE_DIR, "crisismmd_vision_authenticity.pt")
+DMG_WEIGHTS_PATH = os.path.join(BASE_DIR, "crisismmd_vision_damage.pt")
 
 auth_vision_model = None
 dmg_vision_model = None
