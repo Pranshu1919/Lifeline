@@ -96,4 +96,4 @@ To re-train the models on the CrisisMMD v2.0 dataset:
 * **Vijay Katiyar** (2300270130205) – ML Engineer 1 (NLP, Deduplication, Urgency Rating)
 * **Priyanshu Kushwaha** (2300270130136) – ML Engineer 2 (Computer Vision, Spatial Optimization)
 * **Pranshu** (2300270130129) – Full-Stack Developer (Web App, GIS Maps, Express Backend)
-* **Guide**: Dr. Suneel Kumar (Professor, Dept. of IT, Ajay Kumar Garg Engineering College, Ghaziabad)
+* **Guide**: Dr. Sunil Kumar (Professor, Dept. of IT, Ajay Kumar Garg Engineering College, Ghaziabad)
