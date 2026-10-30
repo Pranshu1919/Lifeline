@@ -47,6 +47,8 @@ async function fetchIncidentDetails() {
     const data = await res.json();
     const inc = data.incident;
     const assignedUnit = data.assigned_unit;
+    const disp = data.dispatch;
+    const station = data.station;
     currentIncidentData = inc;
 
     document.getElementById('descriptionText').innerText = inc.description || "No situation description provided.";
@@ -58,6 +60,15 @@ async function fetchIncidentDetails() {
     document.getElementById('reporterPhone').innerText = inc.reporter_phone || "Not provided";
     document.getElementById('reportTime').innerText = inc.created_at || "Recently";
 
+    if (disp && disp.xai_rationale) {
+      const xaiBox = document.getElementById('xaiBox');
+      const xaiText = document.getElementById('xaiText');
+      if (xaiBox && xaiText) {
+        xaiBox.classList.remove('hidden');
+        xaiText.innerText = disp.xai_rationale;
+      }
+    }
+
     // Needs Chips
     const needsContainer = document.getElementById('needsChipsContainer');
     if (inc.needs) {
@@ -66,12 +77,33 @@ async function fetchIncidentDetails() {
       needsContainer.innerHTML = `<span class="text-slate-500 italic">General Rescue Assistance</span>`;
     }
 
-    // Media Box
+    // Media Box (Renders all photos and videos attached)
     const mediaBox = document.getElementById('mediaBox');
-    if (inc.video_url) {
-      mediaBox.innerHTML = `<video src="${inc.video_url}" controls autoplay class="max-h-64 rounded-xl border border-slate-800 w-full object-cover"></video>`;
-    } else if (inc.image_url) {
-      mediaBox.innerHTML = `<img src="${inc.image_url}" class="max-h-64 rounded-xl border border-slate-800 object-contain">`;
+    const images = (inc.image_url || '').split(',').map(s => s.trim()).filter(Boolean);
+    const videos = (inc.video_url || '').split(',').map(s => s.trim()).filter(Boolean);
+
+    if (images.length > 0 || videos.length > 0) {
+      let mediaHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">';
+      images.forEach(imgSrc => {
+        mediaHtml += `
+          <div class="relative rounded-xl overflow-hidden bg-black border border-slate-800 max-h-56 flex items-center justify-center">
+            <img src="${imgSrc}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition" onclick="window.open('${imgSrc}','_blank')">
+            <span class="absolute top-2 left-2 bg-blue-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow">
+              <i class="fa-solid fa-camera"></i> Photo
+            </span>
+          </div>`;
+      });
+      videos.forEach(vidSrc => {
+        mediaHtml += `
+          <div class="relative rounded-xl overflow-hidden bg-black border border-slate-800 max-h-56 flex items-center justify-center">
+            <video src="${vidSrc}" controls class="w-full h-full object-cover"></video>
+            <span class="absolute top-2 left-2 bg-red-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow">
+              <i class="fa-solid fa-video"></i> Video
+            </span>
+          </div>`;
+      });
+      mediaHtml += '</div>';
+      mediaBox.innerHTML = mediaHtml;
     } else {
       mediaBox.innerHTML = `<span class="text-xs text-slate-500"><i class="fa-solid fa-camera text-slate-600 text-xl block mb-1"></i> No media attached</span>`;
     }
@@ -116,7 +148,7 @@ async function fetchUnits() {
     const select = document.getElementById('unitSelect');
     select.innerHTML = units.map(u => `
       <option value="${u.unit_code}">
-        ${u.unit_code} - ${u.type} (${u.status}) [Cap: ${u.capacity}]
+        ${u.unit_code} - ${u.type} [${u.station_name || 'Station'}] (${u.status})
       </option>
     `).join('');
   } catch (err) {
@@ -157,7 +189,7 @@ async function handleManualAssign() {
     alert("Manual allocation failed.");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<i class="fa-solid fa-truck-dispatch"></i> Manually Assign Vehicle`;
+    btn.innerHTML = `<i class="fa-solid fa-truck-fast"></i> Manually Assign Vehicle`;
   }
 }
 

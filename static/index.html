@@ -69,9 +69,24 @@
     </div>
   </header>
 
+  <!-- Active Incident Personal Alert Banner (Visible only if citizen reported an incident) -->
+  <div id="activeIncidentAlertBanner" class="hidden bg-gradient-to-r from-red-950 via-red-900 to-amber-950 border-b border-red-700/80 text-white text-xs py-2.5 px-6 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-400 animate-ping"></span>
+        <span>
+          <strong class="text-amber-300">Active Rescue Tracking:</strong> You have an active reported emergency (<span id="bannerIncidentCode" class="font-mono font-bold text-yellow-300">INC-...</span>). Responders are tracking your location.
+        </span>
+      </div>
+      <a id="bannerTrackBtn" href="/track" class="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-1.5 rounded-xl transition text-xs flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-location-crosshairs text-amber-300"></i> Track My Rescue ➔
+      </a>
+    </div>
+  </div>
+
   <!-- Network Outage Notice -->
   <div id="offlineNotice" class="hidden bg-amber-600 text-white text-xs py-2 px-6 text-center font-semibold shadow-inner flex items-center justify-center gap-2">
-    <i class="fa-solid fa-wifi-slash"></i> No Internet Connection. Your report will be saved on your device and automatically sent when your connection returns.
+    <i class="fa-solid fa-triangle-exclamation"></i> No Internet Connection. Your report will be saved on your device and automatically sent when your connection returns.
   </div>
 
   <!-- Hero Section -->
@@ -103,7 +118,7 @@
       <div class="lg:col-span-5 grid grid-cols-2 gap-4 text-left">
         <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-2">
           <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-wifi-slash"></i>
+            <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
           <h3 class="text-xs font-bold text-white">Works Without Internet</h3>
           <p class="text-[11px] text-slate-400 leading-normal">Reports are stored safely on your phone and uploaded automatically once cellular service returns.</p>
@@ -127,7 +142,7 @@
 
         <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-2">
           <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
-            <i class="fa-solid fa-shield-check"></i>
+            <i class="fa-solid fa-shield-halved"></i>
           </div>
           <h3 class="text-xs font-bold text-white">Verifiable Reports</h3>
           <p class="text-[11px] text-slate-400 leading-normal">Cross-references location data and community reports to prevent false alarms.</p>
@@ -217,22 +232,22 @@
         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">2. Select Assistance Needed</label>
         <div class="flex flex-wrap gap-3" id="needsContainer">
           <button type="button" class="need-chip border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-200 transition cursor-pointer active" data-need="Boat Evacuation">
-            🚤 Boat Evacuation
+            <i class="fa-solid fa-sailboat text-cyan-400 mr-1.5"></i> Boat Evacuation
           </button>
           <button type="button" class="need-chip border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-200 transition cursor-pointer" data-need="Urgent Medical Attention">
-            🚑 Medical Care
+            <i class="fa-solid fa-truck-medical text-red-400 mr-1.5"></i> Medical Care
           </button>
           <button type="button" class="need-chip border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-200 transition cursor-pointer" data-need="Food & Water">
-            🍲 Food & Drinking Water
+            <i class="fa-solid fa-bowl-food text-amber-400 mr-1.5"></i> Food & Drinking Water
           </button>
           <button type="button" class="need-chip border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-200 transition cursor-pointer" data-need="Shelter">
-            🏥 Temporary Shelter
+            <i class="fa-solid fa-tent text-emerald-400 mr-1.5"></i> Temporary Shelter
           </button>
           <button type="button" class="need-chip border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-200 transition cursor-pointer" data-need="Fire Rescue">
-            🚒 Fire Extinguishment
+            <i class="fa-solid fa-fire-extinguisher text-orange-400 mr-1.5"></i> Fire Extinguishment
           </button>
           <button type="button" class="need-chip border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-200 transition cursor-pointer" data-need="Search & Rescue">
-            🪜 Trapped Person Rescue
+            <i class="fa-solid fa-person-falling-burst text-indigo-400 mr-1.5"></i> Trapped Person Rescue
           </button>
         </div>
       </div>
@@ -281,66 +296,85 @@
         <input type="hidden" id="longitude" value="77.5020">
       </div>
 
-      <!-- 6. Camera Photo/Video & File Upload -->
+      <!-- 6. Camera Photo/Video & Media Uploads -->
       <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">6. Scene Photos, Videos & Media Uploads</label>
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+            6. Scene Photos, Videos & Media Uploads
+          </label>
+          <span id="mediaSummaryBadge" class="hidden text-xs bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-3 py-1 rounded-full font-semibold flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i> <span id="mediaSummaryText">0 Files Attached</span>
+          </span>
+        </div>
 
         <div class="bg-slate-950 rounded-xl p-4 text-white text-center space-y-4 border border-slate-800">
-          <div class="relative max-h-64 overflow-hidden rounded-lg bg-black flex items-center justify-center border border-slate-800">
-            <video id="cameraVideo" autoplay playsinline class="w-full h-56 object-cover hidden"></video>
+          <div class="relative max-h-72 overflow-hidden rounded-lg bg-black flex items-center justify-center border border-slate-800">
+            <video id="cameraVideo" autoplay playsinline muted class="w-full h-60 object-cover hidden"></video>
             <div id="cameraPlaceholder" class="p-10 text-slate-400 text-xs flex flex-col items-center gap-2">
               <i class="fa-solid fa-video text-4xl text-slate-600 mb-1"></i>
-              <span class="font-medium text-slate-300">Use camera to capture photos or record short video clips</span>
+              <span class="font-medium text-slate-300">Use live camera to capture real-time photos and record videos</span>
+              <span class="text-[11px] text-slate-500">You can capture multiple photos and video clips together</span>
             </div>
             <div id="recBadge" class="absolute top-3 left-3 bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold hidden flex items-center gap-2 animate-pulse shadow-lg">
               <span class="w-2.5 h-2.5 rounded-full bg-white"></span> REC <span id="recTimer">00:00</span>
             </div>
+            <div id="camFlash" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-150"></div>
           </div>
 
           <div class="flex flex-wrap justify-center gap-3">
-            <button type="button" id="openCamBtn" class="text-xs bg-slate-800 hover:bg-slate-700 px-4 py-2.5 rounded-xl font-semibold text-slate-200 transition flex items-center gap-2 border border-slate-700">
-              <i class="fa-solid fa-camera-retro text-amber-400"></i> Use Camera
+            <button type="button" id="openCamBtn" class="text-xs bg-slate-800 hover:bg-slate-700 px-4 py-2.5 rounded-xl font-semibold text-slate-200 transition flex items-center gap-2 border border-slate-700 cursor-pointer">
+              <i class="fa-solid fa-camera-retro text-amber-400"></i> Open Camera
             </button>
-            <button type="button" id="snapPhotoBtn" class="text-xs bg-blue-600 hover:bg-blue-500 px-4 py-2.5 rounded-xl font-semibold text-white transition hidden flex items-center gap-2 shadow-md">
-              <i class="fa-solid fa-camera"></i> Take Photo
+            <button type="button" id="snapPhotoBtn" class="text-xs bg-blue-600 hover:bg-blue-500 px-4 py-2.5 rounded-xl font-semibold text-white transition hidden flex items-center gap-2 shadow-md cursor-pointer">
+              <i class="fa-solid fa-camera"></i> Capture Live Photo
             </button>
-            <button type="button" id="recordVideoBtn" class="text-xs bg-red-600 hover:bg-red-500 px-4 py-2.5 rounded-xl font-semibold text-white transition hidden flex items-center gap-2 shadow-md">
-              <i class="fa-solid fa-circle-dot"></i> Record Video
+            <button type="button" id="recordVideoBtn" class="text-xs bg-red-600 hover:bg-red-500 px-4 py-2.5 rounded-xl font-semibold text-white transition hidden flex items-center gap-2 shadow-md cursor-pointer">
+              <i class="fa-solid fa-circle-dot"></i> Record Live Video
             </button>
-            <button type="button" id="stopRecordBtn" class="text-xs bg-stone-700 hover:bg-stone-600 px-4 py-2.5 rounded-xl font-semibold text-white transition hidden flex items-center gap-2">
-              <i class="fa-solid fa-square"></i> Finish Recording
+            <button type="button" id="stopRecordBtn" class="text-xs bg-stone-700 hover:bg-stone-600 px-4 py-2.5 rounded-xl font-semibold text-white transition hidden flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-square text-red-400"></i> Finish Recording
+            </button>
+            <button type="button" id="closeCamBtn" class="text-xs bg-slate-900 hover:bg-slate-800 px-3 py-2.5 rounded-xl font-medium text-slate-400 hover:text-slate-200 transition hidden border border-slate-800 cursor-pointer">
+              <i class="fa-solid fa-xmark"></i> Close Camera
             </button>
           </div>
         </div>
 
         <canvas id="photoCanvas" class="hidden"></canvas>
-        <div id="capturedPreview" class="hidden p-4 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <img id="capturedImg" class="w-20 h-20 object-cover rounded-xl border border-slate-800 hidden">
-            <video id="capturedVid" controls class="w-28 h-20 object-cover rounded-xl border border-slate-800 hidden"></video>
-            <div>
-              <span class="text-xs font-bold text-white block" id="mediaTitle">Captured Media Attached</span>
-              <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5"><i class="fa-solid fa-circle-check"></i> Attached & Ready for submission</span>
-            </div>
+
+        <!-- Attached Media Gallery Grid (Shows both Photos & Videos simultaneously) -->
+        <div id="mediaGalleryContainer" class="hidden space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span>Attached Disaster Evidence (<span id="galleryCount">0</span>)</span>
+            <button type="button" id="clearAllMediaBtn" class="text-[11px] text-red-400 hover:text-red-300 font-semibold lowercase hover:underline">clear all</button>
           </div>
-          <button type="button" id="clearMediaBtn" class="text-xs text-red-400 hover:text-red-300 font-semibold px-3 py-1.5 bg-slate-900 rounded-lg border border-slate-800">Remove</button>
+          <div id="attachedMediaGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <!-- Media items dynamically injected here -->
+          </div>
         </div>
 
-        <div class="space-y-1">
-          <label class="block text-xs text-slate-400 font-semibold">Or Select Photo/Video Files from Your Device</label>
+        <div class="space-y-1 pt-1">
+          <label class="block text-xs text-slate-400 font-semibold">Or Select Additional Photos / Videos from Device</label>
           <input type="file" id="imageInput" multiple accept="image/*,video/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer">
         </div>
       </div>
 
-      <!-- 7. Contact Details -->
+      <!-- 7. Contact Details (Required) -->
       <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">7. Your Contact Details (Optional)</label>
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+            7. Your Contact Details <span class="text-red-500 text-sm">*</span> <span class="text-[10px] font-bold text-red-400 bg-red-950/80 px-2 py-0.5 rounded-md border border-red-800/60 uppercase">Required</span>
+          </label>
+          <span class="text-[11px] text-slate-400 font-medium">Used strictly to verify and reach you during rescue dispatch</span>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <input type="text" id="reporter_name" placeholder="Your Full Name" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 text-slate-200">
+            <label for="reporter_name" class="block text-xs font-medium text-slate-400 mb-1.5">Your Full Name <span class="text-red-500">*</span></label>
+            <input type="text" id="reporter_name" required placeholder="Enter your full name" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500 text-slate-200">
           </div>
           <div>
-            <input type="tel" id="reporter_phone" placeholder="Phone Number" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 text-slate-200">
+            <label for="reporter_phone" class="block text-xs font-medium text-slate-400 mb-1.5">Your Contact Phone Number <span class="text-red-500">*</span></label>
+            <input type="tel" id="reporter_phone" required placeholder="Enter 10-digit phone number" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500 text-slate-200">
           </div>
         </div>
       </div>
@@ -353,7 +387,7 @@
     </form>
   </main>
 
-  <!-- Submission Modal -->
+  <!-- Submission Modal (Genuine Report) -->
   <div id="resultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
     <div class="bg-slate-900 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-800 space-y-4">
       <div id="modalIcon" class="w-12 h-12 bg-green-950 text-green-400 rounded-full flex items-center justify-center text-xl mx-auto border border-green-800">
@@ -371,6 +405,57 @@
       <button id="trackBtnModal" class="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-xl text-xs font-bold text-center transition">
         Track Rescue Status ➔
       </button>
+    </div>
+  </div>
+
+  <!-- AI Fake / Hoax Warning Modal (Blocked Report) -->
+  <div id="fakeWarningModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center shadow-2xl border border-red-600/80 space-y-5">
+      <div class="w-16 h-16 bg-red-950/90 text-red-400 rounded-2xl flex items-center justify-center text-3xl mx-auto border border-red-600 shadow-xl shadow-red-900/50 animate-pulse">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      
+      <div class="space-y-1.5">
+        <span class="inline-block text-[10px] font-black uppercase tracking-wider text-red-400 bg-red-950/90 px-3 py-1 rounded-full border border-red-800">
+          AI Authenticity Filter: Flagged As Fake / Prank
+        </span>
+        <h3 class="text-xl sm:text-2xl font-black text-white pt-1">Emergency Report Blocked</h3>
+        <p class="text-xs text-slate-300 leading-relaxed max-w-sm mx-auto">
+          Our Multi-Modal AI models identified this report as a false alarm, prank, or non-disaster submission.
+        </p>
+      </div>
+
+      <!-- Specific Reason Box -->
+      <div class="bg-slate-950 rounded-2xl p-4 text-left border border-slate-800 space-y-2">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-microchip text-indigo-400"></i> AI Detection Reason:
+        </div>
+        <p id="fakeReasonText" class="text-xs font-mono text-red-300 leading-relaxed bg-red-950/40 p-3 rounded-xl border border-red-900/60">
+          Detected prank keywords or absence of genuine disaster signals.
+        </p>
+      </div>
+
+      <!-- Moral Appeal & Legal Warning -->
+      <div class="bg-amber-950/40 border border-amber-800/80 rounded-2xl p-4 text-left space-y-2">
+        <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-hand-holding-heart text-amber-400"></i> Please Do Not Report Fake Disaster Cases
+        </div>
+        <p class="text-[11px] text-amber-200/90 leading-relaxed">
+          Municipal emergency rescue teams, boats, ambulances, and fire units are scarce, life-saving assets. Submitting false, test, or prank distress reports wastes critical responder time and delays rescue for real victims facing life-or-death situations.
+        </p>
+        <div class="text-[10px] font-semibold text-amber-400/80 flex items-center gap-1">
+          <i class="fa-solid fa-scale-balanced"></i> False emergency calls are subject to legal prosecution under disaster management laws.
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button type="button" id="closeFakeModalBtn" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl text-xs font-bold transition cursor-pointer">
+          I Understand & Agree
+        </button>
+        <button type="button" id="editReportBtn" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl text-xs font-bold transition shadow-md shadow-red-600/30 cursor-pointer">
+          Edit Genuine Details
+        </button>
+      </div>
     </div>
   </div>
 

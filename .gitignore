@@ -16,3 +16,6 @@ CrisisMMD_v2.0/
 .DS_Store
 Thumbs.db
 ~$*
+__pycache__/
+*.pyc
+scratch/

@@ -132,18 +132,83 @@ app.get('/api/incidents', (req, res) => {
   });
 });
 
-app.get('/api/incidents/:code', (req, res) => {
-  const code = req.params.code;
-  db.get(`SELECT * FROM incidents WHERE incident_code = ?`, [code], (err, inc) => {
-    if (err || !inc) return res.status(404).json({ error: 'Incident not found' });
+// Helper to fully enrich incident with assigned unit, dispatch log, and station details
+function fetchIncidentEnriched(codeOrQuery, isCode, callback) {
+  let sql;
+  let params;
+
+  if (isCode) {
+    sql = `SELECT * FROM incidents WHERE incident_code = ?`;
+    params = [codeOrQuery];
+  } else {
+    const rawClean = codeOrQuery.trim();
+    const digitsOnly = rawClean.replace(/\D/g, '');
+    const searchTail = digitsOnly.length >= 7 ? digitsOnly.slice(-10) : digitsOnly;
+
+    sql = `
+      SELECT * FROM incidents 
+      WHERE incident_code = ? 
+         OR reporter_phone = ? 
+         OR reporter_phone LIKE ?
+         OR REPLACE(REPLACE(REPLACE(reporter_phone, ' ', ''), '-', ''), '+', '') LIKE ?
+      ORDER BY id DESC LIMIT 1
+    `;
+    params = [rawClean, rawClean, `%${rawClean}%`, `%${searchTail || rawClean}%`];
+  }
+
+  db.get(sql, params, (err, inc) => {
+    if (err || !inc) return callback(err || new Error('Not found'), null);
 
     if (inc.assigned_unit_code) {
       db.get(`SELECT * FROM units WHERE unit_code = ?`, [inc.assigned_unit_code], (err, unit) => {
-        res.json({ incident: inc, assigned_unit: unit || null });
+        db.get(`SELECT * FROM dispatches WHERE incident_code = ? ORDER BY id DESC LIMIT 1`, [inc.incident_code], (err, disp) => {
+          const stCode = (disp && disp.station_code) || (unit && unit.station_code);
+          if (stCode) {
+            db.get(`SELECT * FROM emergency_stations WHERE station_code = ?`, [stCode], (err, station) => {
+              callback(null, { incident: inc, assigned_unit: unit || null, dispatch: disp || null, station: station || null });
+            });
+          } else {
+            callback(null, { incident: inc, assigned_unit: unit || null, dispatch: disp || null, station: null });
+          }
+        });
       });
     } else {
-      res.json({ incident: inc, assigned_unit: null });
+      callback(null, { incident: inc, assigned_unit: null, dispatch: null, station: null });
     }
+  });
+}
+
+// Lookup Incident by Individual's Phone Number or Incident Code
+app.get('/api/incidents/lookup', (req, res) => {
+  const query = (req.query.query || req.query.phone || req.query.code || '').trim();
+  if (!query) return res.status(400).json({ error: 'Search query (phone or incident code) is required.' });
+
+  fetchIncidentEnriched(query, false, (err, payload) => {
+    if (err || !payload) {
+      return res.status(404).json({ error: 'No matching disaster report found for the provided details.' });
+    }
+    res.json(payload);
+  });
+});
+
+app.get('/api/incidents/:code', (req, res) => {
+  const code = req.params.code;
+  fetchIncidentEnriched(code, true, (err, payload) => {
+    if (err || !payload) return res.status(404).json({ error: 'Incident not found' });
+    res.json(payload);
+  });
+});
+
+app.get('/api/stations', (req, res) => {
+  db.all(`SELECT * FROM emergency_stations WHERE status = 'ACTIVE'`, [], (err, stations) => {
+    if (err) return res.status(500).json({ error: err.message });
+    db.all(`SELECT * FROM units`, [], (err, units) => {
+      const enriched = (stations || []).map(st => ({
+        ...st,
+        fleet: (units || []).filter(u => u.station_code === st.station_code)
+      }));
+      res.json({ stations: enriched });
+    });
   });
 });
 
@@ -189,13 +254,14 @@ app.post('/api/incidents/assign-manual', (req, res) => {
     db.get(`SELECT * FROM units WHERE unit_code = ?`, [unit_code], (err, u) => {
       if (err || !u) return res.status(404).json({ error: 'Unit not found' });
 
-      const distKm = haversine(u.latitude, u.longitude, inc.latitude, inc.longitude);
-      const timeMins = Math.round(((distKm / (u.speed_kmh || 30.0)) * 60.0) * 10) / 10;
-      const rationale = `Human Commander Manual Override: Unit ${u.unit_code} assigned to incident ${inc.incident_code} (Est. ${timeMins} mins travel time).`;
+      const distKm = Math.round(haversine(u.latitude, u.longitude, inc.latitude, inc.longitude) * 100) / 100;
+      const timeMins = Math.round(((distKm / (u.speed_kmh || 35.0)) * 60.0) * 10) / 10;
+      const rationale = `Manual Commander Override: Dispatched from home station "${u.station_name || 'Station'}" (${distKm} km away). Estimated transit time: ${timeMins} mins with on-board supplies: ${u.supplies_payload || 'Standard'}.`;
 
       db.run(`UPDATE incidents SET status = 'DISPATCHED', assigned_unit_code = ?, updated_at = CURRENT_TIMESTAMP WHERE incident_code = ?`, [unit_code, incident_code], (err) => {
         db.run(`UPDATE units SET status = 'DISPATCHED', last_dispatch_at = CURRENT_TIMESTAMP WHERE unit_code = ?`, [unit_code], (err) => {
-          db.run(`INSERT INTO dispatches (incident_code, unit_code, travel_time_minutes, xai_rationale) VALUES (?, ?, ?, ?)`, [incident_code, unit_code, timeMins, rationale], (err) => {
+          db.run(`INSERT INTO dispatches (incident_code, unit_code, station_code, station_name, distance_km, travel_time_minutes, supplies_dispatched, xai_rationale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [incident_code, unit_code, u.station_code, u.station_name, distKm, timeMins, u.supplies_payload, rationale], (err) => {
             
             broadcastWS({ event: 'MANUAL_DISPATCH', incident_code, unit_code });
             notifyCitizenServer();
@@ -204,7 +270,10 @@ app.post('/api/incidents/assign-manual', (req, res) => {
               status: 'success',
               incident_code,
               unit_code,
+              station_name: u.station_name,
+              distance_km: distKm,
               travel_time_minutes: timeMins,
+              supplies_dispatched: u.supplies_payload,
               rationale
             });
           });
@@ -240,23 +309,31 @@ app.post('/api/ml/optimize-dispatch', (req, res) => {
         for (let inc of unassigned) {
           let bestUnit = null;
           let minTime = Infinity;
+          let bestDist = 0;
           for (let u of availableUnits) {
             if (assignedUnitIds.has(u.unit_code)) continue;
             const distKm = haversine(u.latitude, u.longitude, inc.latitude, inc.longitude);
-            const timeMins = (distKm / (u.speed_kmh || 30.0)) * 60.0;
+            const timeMins = (distKm / (u.speed_kmh || 35.0)) * 60.0;
             if (timeMins < minTime) {
               minTime = timeMins;
               bestUnit = u;
+              bestDist = distKm;
             }
           }
 
           if (bestUnit) {
             assignedUnitIds.add(bestUnit.unit_code);
+            const rDist = Math.round(bestDist * 100) / 100;
+            const rTime = Math.round(minTime * 10) / 10;
             dispatchPlan.push({
               unit_code: bestUnit.unit_code,
               incident_code: inc.incident_code,
-              travel_time_minutes: Math.round(minTime * 10) / 10,
-              xai_rationale: `Unit ${bestUnit.unit_code} assigned: Shortest travel time of ${Math.round(minTime * 10) / 10} mins to priority incident (Severity ${inc.composite_severity.toFixed(1)}).`
+              station_code: bestUnit.station_code,
+              station_name: bestUnit.station_name,
+              distance_km: rDist,
+              travel_time_minutes: rTime,
+              supplies_payload: bestUnit.supplies_payload,
+              xai_rationale: `Dispatched from nearest station '${bestUnit.station_name}' (${rDist} km away). Fastest transit arrival: ${rTime} mins with on-board supplies: ${bestUnit.supplies_payload}.`
             });
           }
         }
@@ -265,7 +342,8 @@ app.post('/api/ml/optimize-dispatch', (req, res) => {
       for (let item of dispatchPlan) {
         db.run(`UPDATE incidents SET status = 'DISPATCHED', assigned_unit_code = ? WHERE incident_code = ?`, [item.unit_code, item.incident_code]);
         db.run(`UPDATE units SET status = 'DISPATCHED', last_dispatch_at = CURRENT_TIMESTAMP WHERE unit_code = ?`, [item.unit_code]);
-        db.run(`INSERT INTO dispatches (incident_code, unit_code, travel_time_minutes, xai_rationale) VALUES (?, ?, ?, ?)`, [item.incident_code, item.unit_code, item.travel_time_minutes, item.xai_rationale]);
+        db.run(`INSERT INTO dispatches (incident_code, unit_code, station_code, station_name, distance_km, travel_time_minutes, supplies_dispatched, xai_rationale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [item.incident_code, item.unit_code, item.station_code, item.station_name, item.distance_km, item.travel_time_minutes, item.supplies_payload, item.xai_rationale]);
       }
 
       broadcastWS({ event: 'OPTIMIZATION_COMPLETED', plan: dispatchPlan });

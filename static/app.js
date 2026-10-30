@@ -5,7 +5,7 @@ let selectedNeeds = ["Boat Evacuation"];
 let mediaStream = null;
 let mediaRecorder = null;
 let recordedChunks = [];
-let capturedBlob = null;
+let attachedMedia = [];
 let recInterval = null;
 let recSeconds = 0;
 let dbPromise = null;
@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initGpsControls();
   initNetworkStatus();
   initFormSubmit();
+  checkActiveIncidentBanner();
 
   updateOfflineCount();
 });
@@ -194,29 +195,166 @@ function initGpsControls() {
   });
 }
 
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function renderMediaGallery() {
+  const container = document.getElementById('mediaGalleryContainer');
+  const grid = document.getElementById('attachedMediaGrid');
+  const countSpan = document.getElementById('galleryCount');
+  const summaryBadge = document.getElementById('mediaSummaryBadge');
+  const summaryText = document.getElementById('mediaSummaryText');
+
+  if (!attachedMedia || attachedMedia.length === 0) {
+    if (container) container.classList.add('hidden');
+    if (summaryBadge) summaryBadge.classList.add('hidden');
+    return;
+  }
+
+  if (container) container.classList.remove('hidden');
+  if (summaryBadge) summaryBadge.classList.remove('hidden');
+
+  const photoCount = attachedMedia.filter(m => m.type === 'image').length;
+  const videoCount = attachedMedia.filter(m => m.type === 'video').length;
+  const totalCount = attachedMedia.length;
+
+  if (countSpan) countSpan.innerText = totalCount;
+  if (summaryText) {
+    let parts = [];
+    if (photoCount > 0) parts.push(`${photoCount} Photo${photoCount !== 1 ? 's' : ''}`);
+    if (videoCount > 0) parts.push(`${videoCount} Video${videoCount !== 1 ? 's' : ''}`);
+    summaryText.innerText = parts.join(' & ') + ' Attached';
+  }
+
+  if (grid) {
+    grid.innerHTML = '';
+    attachedMedia.forEach((item) => {
+      const card = document.createElement('div');
+      card.className = "relative bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col gap-2 shadow-md";
+
+      let previewEl = '';
+      if (item.type === 'image') {
+        previewEl = `
+          <div class="relative w-full h-32 rounded-lg overflow-hidden bg-black flex items-center justify-center">
+            <img src="${item.previewUrl}" class="w-full h-full object-cover" alt="Captured Evidence">
+            <span class="absolute top-2 left-2 bg-blue-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow">
+              <i class="fa-solid fa-camera"></i> Photo
+            </span>
+          </div>`;
+      } else {
+        previewEl = `
+          <div class="relative w-full h-32 rounded-lg overflow-hidden bg-black flex items-center justify-center">
+            <video src="${item.previewUrl}" controls class="w-full h-full object-cover"></video>
+            <span class="absolute top-2 left-2 bg-red-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow">
+              <i class="fa-solid fa-video"></i> Video
+            </span>
+          </div>`;
+      }
+
+      card.innerHTML = `
+        ${previewEl}
+        <div class="flex items-center justify-between text-[11px] text-slate-400 px-1">
+          <span class="truncate max-w-[130px] font-mono text-slate-300" title="${item.name}">${item.name}</span>
+          <span class="text-slate-500 font-mono">${item.sizeText}</span>
+        </div>
+        <button type="button" class="w-full text-[11px] font-semibold text-red-400 hover:text-red-300 bg-red-950/40 hover:bg-red-950/80 py-1.5 rounded-lg border border-red-900/60 transition flex items-center justify-center gap-1 cursor-pointer" data-remove-id="${item.id}">
+          <i class="fa-solid fa-trash-can"></i> Remove
+        </button>
+      `;
+
+      card.querySelector(`[data-remove-id="${item.id}"]`).addEventListener('click', () => {
+        removeMediaItem(item.id);
+      });
+
+      grid.appendChild(card);
+    });
+  }
+}
+
+function removeMediaItem(id) {
+  attachedMedia = attachedMedia.filter(m => m.id !== id);
+  renderMediaGallery();
+}
+
 function initCameraControls() {
   const openCamBtn = document.getElementById('openCamBtn');
   const snapPhotoBtn = document.getElementById('snapPhotoBtn');
   const recordVideoBtn = document.getElementById('recordVideoBtn');
   const stopRecordBtn = document.getElementById('stopRecordBtn');
+  const closeCamBtn = document.getElementById('closeCamBtn');
   const cameraVideo = document.getElementById('cameraVideo');
   const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+  const fileInput = document.getElementById('imageInput');
+  const clearAllBtn = document.getElementById('clearAllMediaBtn');
 
+  // Handle device file selections (photos and/or videos)
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files && fileInput.files.length > 0) {
+        for (let i = 0; i < fileInput.files.length; i++) {
+          const f = fileInput.files[i];
+          const isVideo = f.type.startsWith('video/') || ['.webm', '.mp4', '.avi', '.mov', '.mkv', '.3gp'].some(ext => f.name.toLowerCase().endsWith(ext));
+          attachedMedia.push({
+            id: 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            file: f,
+            type: isVideo ? 'video' : 'image',
+            name: f.name,
+            previewUrl: URL.createObjectURL(f),
+            sizeText: formatBytes(f.size)
+          });
+        }
+        renderMediaGallery();
+        fileInput.value = '';
+      }
+    });
+  }
+
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', () => {
+      attachedMedia = [];
+      renderMediaGallery();
+    });
+  }
+
+  // Open Camera
   openCamBtn.addEventListener('click', async () => {
     try {
-      mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: true });
       cameraVideo.srcObject = mediaStream;
       cameraVideo.classList.remove('hidden');
       cameraPlaceholder.classList.add('hidden');
       snapPhotoBtn.classList.remove('hidden');
       recordVideoBtn.classList.remove('hidden');
+      if (closeCamBtn) closeCamBtn.classList.remove('hidden');
       openCamBtn.classList.add('hidden');
     } catch (err) {
-      alert("Camera access error: " + err.message + "\nYou can use file upload below.");
+      alert("Camera access error: " + err.message + "\nYou can still upload scene photos and videos using the file selector below.");
     }
   });
 
-  // Take Photo
+  // Close Camera
+  if (closeCamBtn) {
+    closeCamBtn.addEventListener('click', () => {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
+      cameraVideo.classList.add('hidden');
+      cameraPlaceholder.classList.remove('hidden');
+      snapPhotoBtn.classList.add('hidden');
+      recordVideoBtn.classList.add('hidden');
+      stopRecordBtn.classList.add('hidden');
+      closeCamBtn.classList.add('hidden');
+      openCamBtn.classList.remove('hidden');
+    });
+  }
+
+  // Capture Live Photo (Keeps camera active for more photos/videos)
   snapPhotoBtn.addEventListener('click', () => {
     const canvas = document.getElementById('photoCanvas');
     canvas.width = cameraVideo.videoWidth || 640;
@@ -224,13 +362,33 @@ function initCameraControls() {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
 
+    // Visual flash feedback
+    const flash = document.getElementById('camFlash');
+    if (flash) {
+      flash.classList.remove('opacity-0');
+      flash.classList.add('opacity-80');
+      setTimeout(() => {
+        flash.classList.remove('opacity-80');
+        flash.classList.add('opacity-0');
+      }, 120);
+    }
+
     canvas.toBlob((blob) => {
-      capturedBlob = new File([blob], `live_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-      showCapturedPreview(URL.createObjectURL(blob), 'image');
+      const fileName = `live_photo_${Date.now()}.jpg`;
+      const file = new File([blob], fileName, { type: 'image/jpeg' });
+      attachedMedia.push({
+        id: 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        file: file,
+        type: 'image',
+        name: fileName,
+        previewUrl: URL.createObjectURL(blob),
+        sizeText: formatBytes(blob.size)
+      });
+      renderMediaGallery();
     }, 'image/jpeg', 0.9);
   });
 
-  // Record Video
+  // Record Live Video
   recordVideoBtn.addEventListener('click', () => {
     recordedChunks = [];
     try {
@@ -246,8 +404,17 @@ function initCameraControls() {
 
     mediaRecorder.onstop = () => {
       const blob = new Blob(recordedChunks, { type: 'video/webm' });
-      capturedBlob = new File([blob], `live_video_${Date.now()}.webm`, { type: 'video/webm' });
-      showCapturedPreview(URL.createObjectURL(blob), 'video');
+      const fileName = `live_video_${Date.now()}.webm`;
+      const file = new File([blob], fileName, { type: 'video/webm' });
+      attachedMedia.push({
+        id: 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        file: file,
+        type: 'video',
+        name: fileName,
+        previewUrl: URL.createObjectURL(blob),
+        sizeText: formatBytes(blob.size)
+      });
+      renderMediaGallery();
       clearInterval(recInterval);
       document.getElementById('recBadge').classList.add('hidden');
     };
@@ -273,30 +440,29 @@ function initCameraControls() {
     stopRecordBtn.classList.add('hidden');
     recordVideoBtn.classList.remove('hidden');
   });
-
-  document.getElementById('clearMediaBtn').addEventListener('click', () => {
-    capturedBlob = null;
-    document.getElementById('capturedPreview').classList.add('hidden');
-  });
 }
 
-function showCapturedPreview(url, type) {
-  const container = document.getElementById('capturedPreview');
-  const img = document.getElementById('capturedImg');
-  const vid = document.getElementById('capturedVid');
-  const title = document.getElementById('mediaTitle');
+function checkActiveIncidentBanner() {
+  const banner = document.getElementById('activeIncidentAlertBanner');
+  const codeSpan = document.getElementById('bannerIncidentCode');
+  const trackBtn = document.getElementById('bannerTrackBtn');
 
-  container.classList.remove('hidden');
-  if (type === 'image') {
-    img.src = url;
-    img.classList.remove('hidden');
-    vid.classList.add('hidden');
-    title.innerText = "Live Photo Captured";
-  } else {
-    vid.src = url;
-    vid.classList.remove('hidden');
-    img.classList.add('hidden');
-    title.innerText = "Live Video Recorded";
+  const saved = localStorage.getItem('lifeline_active_incident');
+  if (saved && banner) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.code) {
+        banner.classList.remove('hidden');
+        if (codeSpan) codeSpan.innerText = parsed.code;
+        if (trackBtn) trackBtn.href = `/track?id=${parsed.code}`;
+
+        // Also update navbar track links
+        document.querySelectorAll('a[href="/track"]').forEach(a => {
+          a.href = `/track?id=${parsed.code}`;
+          a.innerHTML = `<i class="fa-solid fa-location-crosshairs text-amber-400 animate-pulse"></i> Track My Rescue (${parsed.code})`;
+        });
+      }
+    } catch (e) {}
   }
 }
 
@@ -308,20 +474,42 @@ function initFormSubmit() {
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
 
-    const fileInput = document.getElementById('imageInput');
-    const attachedFiles = [];
+    // Contact Details & Description Strict Validation
+    const nameInput = document.getElementById('reporter_name');
+    const phoneInput = document.getElementById('reporter_phone');
+    const descInput = document.getElementById('description');
 
-    if (capturedBlob) attachedFiles.push(capturedBlob);
-    if (fileInput.files && fileInput.files.length > 0) {
-      for (let i = 0; i < fileInput.files.length; i++) {
-        attachedFiles.push(fileInput.files[i]);
-      }
+    const name = (nameInput ? nameInput.value : '').trim();
+    const phone = (phoneInput ? phoneInput.value : '').trim();
+    const desc = (descInput ? descInput.value : '').trim();
+
+    if (!name) {
+      alert("⚠️ Your Full Name is required so rescue teams can identify and coordinate with you.");
+      if (nameInput) nameInput.focus();
+      submitBtn.disabled = false;
+      return;
     }
 
+    if (!phone || phone.length < 7) {
+      alert("⚠️ A valid Contact Phone Number is required so emergency dispatchers can communicate with you directly.");
+      if (phoneInput) phoneInput.focus();
+      submitBtn.disabled = false;
+      return;
+    }
+
+    if (!desc) {
+      alert("⚠️ Please provide a brief situation description of the emergency.");
+      if (descInput) descInput.focus();
+      submitBtn.disabled = false;
+      return;
+    }
+
+    const attachedFiles = attachedMedia.map(m => m.file);
+
     const reportData = {
-      reporter_name: document.getElementById('reporter_name')?.value || "Anonymous",
-      reporter_phone: document.getElementById('reporter_phone')?.value || "",
-      description: document.getElementById('description').value,
+      reporter_name: name,
+      reporter_phone: phone,
+      description: desc,
       demands: document.getElementById('demands')?.value || "",
       category: selectedCategory,
       needs: selectedNeeds.join(", "),
@@ -335,8 +523,8 @@ function initFormSubmit() {
       await saveReportOffline(reportData);
       showOfflineModal();
       form.reset();
-      capturedBlob = null;
-      document.getElementById('capturedPreview').classList.add('hidden');
+      attachedMedia = [];
+      renderMediaGallery();
       submitBtn.disabled = false;
       return;
     }
@@ -360,12 +548,20 @@ function initFormSubmit() {
         body: formData
       });
       const res = await response.json();
-      if (response.ok) {
-        showOnlineModal(res);
+      if (response.ok && res.status === 'success') {
+        showOnlineModal(res, reportData);
         form.reset();
-        capturedBlob = null;
-        document.getElementById('capturedPreview').classList.add('hidden');
+        attachedMedia = [];
+        renderMediaGallery();
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(t => t.stop());
+          mediaStream = null;
+        }
+      } else if (res.status === 'rejected_fake' || res.is_fake) {
+        // AI Authenticity Filter Flagged Report as Fake/Prank!
+        showFakeWarningModal(res);
       } else {
+        alert(res.message || "Failed to submit report. Saving locally for offline retry.");
         await saveReportOffline(reportData);
         showOfflineModal();
       }
@@ -451,16 +647,50 @@ async function syncOfflineReports() {
   };
 }
 
-function showOnlineModal(res) {
+function showOnlineModal(res, reportData) {
   const code = res.incident_code || res.incident_id || "INC-2026-0001";
-  document.getElementById('modalTitle').innerText = "Emergency Alert Sent";
-  document.getElementById('modalSub').innerText = "Incident code " + code + ". Opening live rescue tracking dashboard...";
-  document.getElementById('modalDetails').innerHTML = `
-    <div><strong>Incident Code:</strong> ${code}</div>
-    <div><strong>Category:</strong> ${res.category}</div>
-    <div><strong>Needs:</strong> ${selectedNeeds.join(", ")}</div>
-    <div><strong>AI Urgency Rating:</strong> Level ${res.severity_level || 4.5} / 5</div>
-  `;
+
+  // Persist THIS individual citizen's reported incident in localStorage
+  const myIncident = {
+    code: code,
+    category: res.category || selectedCategory,
+    reporter_name: (reportData ? reportData.reporter_name : '') || '',
+    reporter_phone: (reportData ? reportData.reporter_phone : '') || '',
+    description: (reportData ? reportData.description : '') || '',
+    timestamp: new Date().toISOString()
+  };
+  localStorage.setItem('lifeline_active_incident', JSON.stringify(myIncident));
+
+  let myReports = [];
+  try {
+    myReports = JSON.parse(localStorage.getItem('lifeline_my_reports') || '[]');
+  } catch (e) {}
+  myReports = myReports.filter(r => r.code !== code);
+  myReports.unshift(myIncident);
+  localStorage.setItem('lifeline_my_reports', JSON.stringify(myReports));
+
+  if (res.is_dispatched) {
+    document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-truck-fast text-emerald-400"></i> Rescue Team Dispatched!`;
+    document.getElementById('modalSub').innerText = `Nearest station "${res.station_name}" (${res.distance_km} km away) has immediately dispatched ${res.unit_type || res.assigned_unit}. ETA: ${res.travel_time_minutes} mins.`;
+    document.getElementById('modalDetails').innerHTML = `
+      <div><strong>Incident Code:</strong> ${code}</div>
+      <div><strong>Nearest Emergency Station:</strong> <span class="text-emerald-400 font-bold">${res.station_name}</span> (${res.distance_km} km)</div>
+      <div><strong>Dispatched Vehicle:</strong> <span class="text-indigo-300 font-bold">${res.assigned_unit} (${res.unit_type})</span></div>
+      <div><strong>Fastest Estimated Arrival:</strong> <span class="text-amber-300 font-bold">${res.travel_time_minutes} Minutes</span></div>
+      <div><strong>On-Board Supplies:</strong> <span class="text-slate-300 text-xs">${res.supplies_dispatched || 'Emergency Life-Saving Supplies'}</span></div>
+      <div><strong>Reporter:</strong> ${myIncident.reporter_name} (${myIncident.reporter_phone})</div>
+    `;
+  } else {
+    document.getElementById('modalTitle').innerText = "Emergency Alert Sent";
+    document.getElementById('modalSub').innerText = "Incident code " + code + ". Opening your personal live rescue tracking dashboard...";
+    document.getElementById('modalDetails').innerHTML = `
+      <div><strong>Incident Code:</strong> ${code}</div>
+      <div><strong>Reporter:</strong> ${myIncident.reporter_name} (${myIncident.reporter_phone})</div>
+      <div><strong>Category:</strong> ${res.category}</div>
+      <div><strong>Needs:</strong> ${selectedNeeds.join(", ")}</div>
+      <div><strong>AI Urgency Rating:</strong> Level ${res.severity_level || 4.5} / 5</div>
+    `;
+  }
 
   document.getElementById('trackBtnModal').onclick = () => {
     window.location.href = `/track?id=${code}`;
@@ -470,7 +700,7 @@ function showOnlineModal(res) {
 
   setTimeout(() => {
     window.location.href = `/track?id=${code}`;
-  }, 1500);
+  }, 2200);
 }
 
 function showOfflineModal() {
@@ -487,6 +717,36 @@ function showOfflineModal() {
   };
 
   document.getElementById('resultModal').classList.remove('hidden');
+}
+
+function showFakeWarningModal(res) {
+  const modal = document.getElementById('fakeWarningModal');
+  const reasonText = document.getElementById('fakeReasonText');
+  const closeBtn = document.getElementById('closeFakeModalBtn');
+  const editBtn = document.getElementById('editReportBtn');
+
+  if (reasonText) {
+    reasonText.innerText = res.fake_reason || res.message || "Detected non-disaster, test, or prank keywords.";
+  }
+
+  if (modal) modal.classList.remove('hidden');
+
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      if (modal) modal.classList.add('hidden');
+    };
+  }
+
+  if (editBtn) {
+    editBtn.onclick = () => {
+      if (modal) modal.classList.add('hidden');
+      const desc = document.getElementById('description');
+      if (desc) {
+        desc.focus();
+        desc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+  }
 }
 
 function closeModal() {

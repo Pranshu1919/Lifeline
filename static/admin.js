@@ -157,7 +157,7 @@ async function fetchUnits() {
       });
 
       const m = L.marker([u.latitude, u.longitude], { icon: uIcon }).addTo(adminMap);
-      m.bindPopup(`<div class="text-xs"><strong>${u.unit_code}</strong><br>Type: ${u.type}<br>Status: ${u.status}</div>`);
+      m.bindPopup(`<div class="text-xs"><strong>${u.unit_code}</strong> (${u.type})<br><strong>Station:</strong> ${u.station_name || 'Base'}<br><strong>Status:</strong> ${u.status}<br><span class="text-[10px] text-slate-500">Supplies: ${u.supplies_payload || 'Standard'}</span></div>`);
       unitMarkers.push(m);
 
       const statusBadge = u.status === 'AVAILABLE' ? 'bg-emerald-900/60 text-emerald-300 border-emerald-700' : 'bg-amber-900/60 text-amber-300 border-amber-700';
@@ -169,7 +169,12 @@ async function fetchUnits() {
               <span>${u.unit_code}</span>
               <span class="text-[10px] text-slate-400 font-normal">(${u.type})</span>
             </div>
-            <div class="text-[10px] text-slate-400 mt-0.5">Capacity: ${u.capacity} persons | Speed: ${u.speed_kmh} km/h</div>
+            <div class="text-[10px] text-indigo-300 font-semibold mt-0.5 flex items-center gap-1">
+              <i class="fa-solid fa-building-shield"></i> ${u.station_name || 'Emergency Base'}
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5 max-w-[220px] truncate" title="${u.supplies_payload || ''}">
+              <i class="fa-solid fa-kit-medical text-amber-400"></i> ${u.supplies_payload || 'Standard Supplies'}
+            </div>
           </div>
           <span class="px-2 py-0.5 rounded border text-[10px] font-bold ${statusBadge}">${u.status}</span>
         </div>
@@ -259,7 +264,7 @@ function renderXaiPanel(plan) {
   } else {
     xaiContent.innerHTML = plan.map(item => `
       <div class="bg-slate-800 p-2.5 rounded-xl border border-amber-500/30 font-mono text-[11px] space-y-1">
-        <div class="text-amber-300 font-bold"><i class="fa-solid fa-truck-dispatch mr-1"></i> ${item.unit_code} ➔ ${item.incident_code}</div>
+        <div class="text-amber-300 font-bold"><i class="fa-solid fa-truck-fast mr-1"></i> ${item.unit_code} ➔ ${item.incident_code}</div>
         <div class="text-slate-300">${item.xai_rationale}</div>
         <div class="text-slate-400 text-[10px]">Est Arrival: ${item.travel_time_minutes} minutes</div>
       </div>
