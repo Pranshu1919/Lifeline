@@ -192,14 +192,14 @@ function renderIncidentsTable() {
     const badgeColor = inc.severity >= 4 ? 'bg-red-500/20 text-red-400 border-red-500/30' : inc.severity >= 3 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border-blue-500/30';
 
     return `
-      <tr onclick="window.location.href='/incident?id=${inc.incident_code}'" class="hover:bg-slate-800/60 transition cursor-pointer border-b border-slate-800/60">
+      <tr onclick="window.location.href='/incident?id=${inc.incident_code}'" class="hover:bg-slate-50 transition cursor-pointer border-b border-slate-200">
         <td class="p-3 font-mono text-yellow-300 font-bold">${inc.incident_code}</td>
         <td class="p-3"><span class="px-2.5 py-1 rounded border text-xs font-bold ${badgeColor}">Level ${inc.severity.toFixed(1)} / 5.0</span></td>
         <td class="p-3 font-semibold text-white">${inc.category}</td>
-        <td class="p-3 max-w-xs truncate text-slate-300" title="${inc.description}">${inc.description}</td>
-        <td class="p-3 max-w-xs text-amber-300 font-mono text-xs truncate" title="${inc.demands || ''}">${inc.demands || '<span class="text-slate-600">Standard Relief</span>'}</td>
-        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${inc.status === 'DISPATCHED' ? 'bg-emerald-900/60 text-emerald-300' : 'bg-slate-800 text-slate-400'}">${inc.status}</span></td>
-        <td class="p-3 font-mono text-blue-300">${inc.assigned_unit || '<span class="text-slate-600">Unassigned</span>'}</td>
+        <td class="p-3 max-w-xs truncate text-slate-700" title="${inc.description}">${inc.description}</td>
+        <td class="p-3 max-w-xs text-amber-800 font-mono text-xs truncate font-medium" title="${inc.demands || ''}">${inc.demands || '<span class="text-slate-400">Standard Relief</span>'}</td>
+        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${inc.status === 'DISPATCHED' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}">${inc.status}</span></td>
+        <td class="p-3 font-mono text-blue-700 font-bold">${inc.assigned_unit || '<span class="text-slate-600">Unassigned</span>'}</td>
         <td class="p-3 text-right">
           <div class="inline-flex gap-1.5">
             <a href="/incident?id=${inc.incident_code}" onclick="event.stopPropagation();" class="text-xs bg-red-600 hover:bg-red-500 text-white font-bold px-2.5 py-1.5 rounded-xl transition inline-flex items-center gap-1 shadow-sm">
@@ -236,19 +236,19 @@ async function fetchUnits() {
       m.bindPopup(`<div class="text-xs"><strong>${u.unit_code}</strong> (${u.type})<br><strong>Station:</strong> ${u.station_name || 'Base'}<br><strong>Status:</strong> ${u.status}<br><span class="text-[10px] text-slate-500">Supplies: ${u.supplies_payload || 'Standard'}</span></div>`);
       unitMarkers.push(m);
 
-      const statusBadge = u.status === 'AVAILABLE' ? 'bg-emerald-900/60 text-emerald-300 border-emerald-700' : 'bg-amber-900/60 text-amber-300 border-amber-700';
+      const statusBadge = u.status === 'AVAILABLE' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' : 'bg-amber-100 text-amber-700 border-amber-300';
 
       return `
-        <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/60 flex justify-between items-center text-xs">
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center text-xs">
           <div>
-            <div class="font-bold text-white flex items-center gap-2">
+            <div class="font-bold text-slate-900 flex items-center gap-2">
               <span>${u.unit_code}</span>
-              <span class="text-[10px] text-slate-400 font-normal">(${u.type})</span>
+              <span class="text-[10px] text-slate-500 font-normal">(${u.type})</span>
             </div>
-            <div class="text-[10px] text-indigo-300 font-semibold mt-0.5 flex items-center gap-1">
+            <div class="text-[10px] text-indigo-700 font-semibold mt-0.5 flex items-center gap-1">
               <i class="fa-solid fa-building-shield"></i> ${u.station_name || 'Emergency Base'}
             </div>
-            <div class="text-[10px] text-slate-400 mt-0.5 max-w-[220px] truncate" title="${u.supplies_payload || ''}">
+            <div class="text-[10px] text-slate-500 mt-0.5 max-w-[220px] truncate" title="${u.supplies_payload || ''}">
               <i class="fa-solid fa-kit-medical text-amber-400"></i> ${u.supplies_payload || 'Standard Supplies'}
             </div>
           </div>
@@ -339,9 +339,9 @@ function renderXaiPanel(plan) {
     xaiContent.innerHTML = `<div class="text-slate-400 italic">All active incidents have already been assigned rescue units.</div>`;
   } else {
     xaiContent.innerHTML = plan.map(item => `
-      <div class="bg-slate-800 p-2.5 rounded-xl border border-amber-500/30 font-mono text-[11px] space-y-1">
-        <div class="text-amber-300 font-bold"><i class="fa-solid fa-truck-fast mr-1"></i> ${item.unit_code} ➔ ${item.incident_code}</div>
-        <div class="text-slate-300">${item.xai_rationale}</div>
+      <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200 font-mono text-[11px] space-y-1">
+        <div class="text-amber-900 font-bold"><i class="fa-solid fa-truck-fast mr-1"></i> ${item.unit_code} ➔ ${item.incident_code}</div>
+        <div class="text-slate-700">${item.xai_rationale}</div>
         <div class="text-slate-400 text-[10px]">Est Arrival: ${item.travel_time_minutes} minutes</div>
       </div>
     `).join('');

@@ -19,37 +19,37 @@
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
   <!-- Navigation Header -->
-  <header class="bg-slate-950 border-b border-slate-800 px-6 py-3.5 flex flex-wrap justify-between items-center gap-3 sticky top-0 z-30 shadow-md">
+  <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex flex-wrap justify-between items-center gap-3 sticky top-0 z-30 shadow-sm">
     <div class="flex items-center space-x-3">
       <a href="/" class="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white font-bold shadow-lg shadow-red-600/30">
         <i class="fa-solid fa-heart-pulse"></i>
       </a>
       <div>
-        <span class="text-base font-bold tracking-tight text-white leading-none block">LifeLine Rescue Tracker</span>
-        <span class="text-[10px] text-slate-400 font-medium">Real-Time Station Origin, Vehicle Route & Emergency Supplies</span>
+        <span class="text-base font-bold tracking-tight text-slate-900 leading-none block">LifeLine Rescue Tracker</span>
+        <span class="text-[10px] text-slate-500 font-medium">Real-Time Station Origin, Vehicle Route & Emergency Supplies</span>
       </div>
     </div>
     
     <div class="flex items-center flex-wrap gap-2.5">
       <!-- Active Incident Quick Switcher -->
-      <div id="incidentSwitcherWrap" class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl shadow-inner">
+      <div id="incidentSwitcherWrap" class="flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl shadow-inner">
         <i class="fa-solid fa-satellite-dish text-red-500 animate-pulse text-xs"></i>
-        <label for="activeIncidentSelect" class="text-xs font-semibold text-slate-400 hidden sm:inline">Active Case:</label>
-        <select id="activeIncidentSelect" class="bg-transparent text-xs font-mono font-bold text-yellow-300 focus:outline-none cursor-pointer max-w-[220px] truncate">
+        <label for="activeIncidentSelect" class="text-xs font-semibold text-slate-600 hidden sm:inline">Active Case:</label>
+        <select id="activeIncidentSelect" class="bg-transparent text-xs font-mono font-bold text-slate-900 focus:outline-none cursor-pointer max-w-[220px] truncate font-bold">
           <option value="" disabled selected>Loading Active Operations...</option>
         </select>
       </div>
 
       <!-- Quick Search / Lookup Modal Button -->
-      <button type="button" id="headerLookupBtn" class="bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold px-3 py-1.5 rounded-xl border border-slate-800 transition text-xs flex items-center gap-1.5 cursor-pointer">
+      <button type="button" id="headerLookupBtn" class="bg-white hover:bg-slate-100 text-slate-700 font-semibold px-3 py-1.5 rounded-xl border border-slate-300 shadow-sm transition text-xs flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-magnifying-glass text-amber-400"></i> <span class="hidden sm:inline">Search</span>
       </button>
 
       <!-- Back to Command Center (Visible on Admin Port 8001) -->
-      <a id="backToAdminBtn" href="/" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-1.5 rounded-xl border border-slate-700 transition flex items-center gap-1.5 shadow-sm">
+      <a id="backToAdminBtn" href="/" class="hidden text-xs bg-white hover:bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-xl border border-slate-300 shadow-sm transition flex items-center gap-1.5 shadow-sm">
         <i class="fa-solid fa-shield text-red-400"></i> Command Center
       </a>
 
@@ -64,13 +64,13 @@
   <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-8 space-y-6">
 
     <!-- View A: No Personal Report Found State -->
-    <div id="noReportState" class="hidden max-w-2xl mx-auto my-12 bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-2xl text-center space-y-6">
-      <div class="w-20 h-20 bg-amber-950/60 text-amber-400 rounded-3xl flex items-center justify-center text-3xl mx-auto border border-amber-800/80 shadow-inner">
+    <div id="noReportState" class="hidden max-w-2xl mx-auto my-12 bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl text-center space-y-6">
+      <div class="w-20 h-20 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center text-3xl mx-auto border border-amber-200 shadow-sm">
         <i class="fa-solid fa-location-crosshairs animate-pulse"></i>
       </div>
       <div class="space-y-2">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">No Active Emergency Report Found</h2>
-        <p class="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">No Active Emergency Report Found</h2>
+        <p class="text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
           You have not submitted an emergency distress alert yet. Once you report an emergency, live rescue responder vehicle tracking, distance, and real-time arrival estimates will automatically appear here.
         </p>
       </div>
@@ -79,16 +79,16 @@
         <a href="/#reportForm" class="bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 px-6 rounded-2xl shadow-xl shadow-red-600/30 transition text-sm flex items-center justify-center gap-2 cursor-pointer">
           <i class="fa-solid fa-paper-plane"></i> Report an Emergency Now
         </a>
-        <button type="button" id="toggleSearchBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-3.5 px-6 rounded-2xl border border-slate-700 transition text-sm flex items-center justify-center gap-2 cursor-pointer">
+        <button type="button" id="toggleSearchBtn" class="bg-white hover:bg-slate-100 text-slate-700 font-semibold py-3.5 px-6 rounded-2xl border border-slate-300 shadow-sm transition text-sm flex items-center justify-center gap-2 cursor-pointer">
           <i class="fa-solid fa-magnifying-glass text-amber-400"></i> Lookup by Phone / Code
         </button>
       </div>
 
       <!-- Lookup Box -->
-      <div id="lookupContainer" class="hidden pt-6 border-t border-slate-800/80 text-left space-y-3">
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Search Your Emergency Report</label>
+      <div id="lookupContainer" class="hidden pt-6 border-t border-slate-200 text-left space-y-3">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Search Your Emergency Report</label>
         <div class="flex gap-2">
-          <input type="text" id="lookupInput" placeholder="Enter Incident Code (e.g. INC-2026-0003) or Phone Number" class="flex-grow px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 text-slate-200">
+          <input type="text" id="lookupInput" placeholder="Enter Incident Code (e.g. INC-2026-0003) or Phone Number" class="flex-grow px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 text-slate-800 placeholder:text-slate-400 shadow-sm">
           <button type="button" id="lookupSubmitBtn" class="bg-amber-600 hover:bg-amber-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-search"></i> Find Report
           </button>
@@ -101,18 +101,18 @@
     <div id="activeReportState" class="hidden space-y-6">
 
       <!-- Citizen Personal Report Identification Banner -->
-      <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800 flex flex-wrap justify-between items-center gap-4">
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-red-950/80 border border-red-800 text-red-400 flex items-center justify-center text-lg">
+          <div class="w-10 h-10 rounded-xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center text-lg shadow-sm">
             <i class="fa-solid fa-user-shield"></i>
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-white" id="reporterNameDisplay">Your Report</span>
-              <span id="categoryBadge" class="text-[10px] font-bold uppercase bg-red-950 text-red-300 border border-red-800/80 px-2 py-0.5 rounded-md">Category</span>
+              <span class="text-sm font-bold text-slate-900" id="reporterNameDisplay">Your Report</span>
+              <span id="categoryBadge" class="text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-md">Category</span>
             </div>
-            <div class="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-              <span>Contact: <strong class="text-slate-300 font-mono" id="reporterPhoneDisplay">--</strong></span>
+            <div class="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+              <span>Contact: <strong class="text-slate-700 font-mono" id="reporterPhoneDisplay">--</strong></span>
               <span>•</span>
               <span id="reportedTimeDisplay">Just now</span>
             </div>
@@ -121,7 +121,7 @@
 
         <div id="multipleReportsContainer" class="hidden flex items-center gap-2 text-xs">
           <span class="text-slate-400 font-semibold">Your Other Reports:</span>
-          <select id="switchReportSelect" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-500/40">
+          <select id="switchReportSelect" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500/40">
           </select>
         </div>
       </div>
@@ -144,59 +144,59 @@
       </div>
 
       <!-- Emergency Station Origin & Rapid Dispatch Card -->
-      <div id="stationCard" class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+      <div id="stationCard" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
         <div class="flex flex-wrap justify-between items-center gap-3">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-950/80 border border-indigo-700/80 text-indigo-400 flex items-center justify-center text-2xl shadow-inner">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-2xl shadow-sm">
               <i class="fa-solid fa-building-shield" id="stationIcon"></i>
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold flex items-center gap-1">
                   <i class="fa-solid fa-bolt"></i> Nearest Emergency Station Dispatched
                 </span>
-                <span id="stationCodeDisplay" class="font-mono text-xs text-slate-400">STATION-01</span>
+                <span id="stationCodeDisplay" class="font-mono text-xs text-slate-600">STATION-01</span>
               </div>
-              <h3 id="stationNameDisplay" class="text-base sm:text-lg font-bold text-white mt-1">Analyzing Nearest Emergency Hub...</h3>
-              <p id="stationAddressDisplay" class="text-xs text-slate-400 mt-0.5">Calculating fastest response station proximity...</p>
+              <h3 id="stationNameDisplay" class="text-base sm:text-lg font-bold text-slate-900 mt-1">Analyzing Nearest Emergency Hub...</h3>
+              <p id="stationAddressDisplay" class="text-xs text-slate-600 mt-0.5">Calculating fastest response station proximity...</p>
             </div>
           </div>
 
           <div class="flex flex-col sm:items-end gap-1 text-xs">
             <span class="text-slate-400">Station Direct Helpline:</span>
-            <a id="stationPhoneDisplay" href="#" class="font-mono font-bold text-amber-300 hover:text-amber-200 transition bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-1.5">
+            <a id="stationPhoneDisplay" href="#" class="font-mono font-bold text-slate-800 font-bold transition bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 flex items-center gap-1.5">
               <i class="fa-solid fa-phone"></i> +91 120-2734101
             </a>
           </div>
         </div>
 
-        <div class="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-            <span class="text-slate-400 block text-[11px]">Station Proximity:</span>
-            <span id="stationDistDisplay" class="font-bold text-white text-sm">-- km away</span>
+        <div class="pt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="text-slate-500 block text-[11px]">Station Proximity:</span>
+            <span id="stationDistDisplay" class="font-bold text-slate-900 text-sm">-- km away</span>
           </div>
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-            <span class="text-slate-400 block text-[11px]">Assigned Emergency Vehicle:</span>
-            <span id="vehicleTypeDisplay" class="font-bold text-indigo-300 text-sm">--</span>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="text-slate-500 block text-[11px]">Assigned Emergency Vehicle:</span>
+            <span id="vehicleTypeDisplay" class="font-bold text-indigo-700 text-sm">--</span>
           </div>
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-            <span class="text-slate-400 block text-[11px]">Fastest Transit Estimate:</span>
-            <span id="transitEtaDisplay" class="font-bold text-emerald-400 text-sm">-- mins</span>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="text-slate-500 block text-[11px]">Fastest Transit Estimate:</span>
+            <span id="transitEtaDisplay" class="font-bold text-emerald-700 text-sm">-- mins</span>
           </div>
         </div>
       </div>
 
       <!-- Life-Saving Emergency Supplies Dispatched Card -->
-      <div id="suppliesCard" class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-3">
+      <div id="suppliesCard" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
             <i class="fa-solid fa-kit-medical text-red-400 text-base"></i> On-Board Emergency Supplies Dispatched from Station
           </h4>
-          <span class="text-[11px] text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded-md font-semibold">
+          <span class="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold">
             <i class="fa-solid fa-truck-ramp-box"></i> Loaded on Vehicle
           </span>
         </div>
-        <p class="text-xs text-slate-400">
+        <p class="text-xs text-slate-600">
           The following medical equipment, rescue gear, and humanitarian supplies are currently on board the dispatched unit:
         </p>
         <div id="suppliesPillsContainer" class="flex flex-wrap gap-2 pt-1">
@@ -205,42 +205,42 @@
       </div>
 
       <!-- Rescue Progress Stepper -->
-      <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Rescue Response Progress</h3>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Rescue Response Progress</h3>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
-          <div class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 font-semibold flex flex-col items-center gap-1.5">
+          <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold flex flex-col items-center gap-1.5">
             <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
             <span>1. Report Received</span>
           </div>
-          <div class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 font-semibold flex flex-col items-center gap-1.5">
+          <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold flex flex-col items-center gap-1.5">
             <i class="fa-solid fa-brain text-emerald-400 text-lg"></i>
             <span>2. Assessed by AI</span>
           </div>
-          <div id="step3" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-500 font-medium flex flex-col items-center gap-1.5">
-            <i class="fa-solid fa-truck-fast text-slate-600 text-lg"></i>
+          <div id="step3" class="p-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 font-medium flex flex-col items-center gap-1.5">
+            <i class="fa-solid fa-truck-fast text-slate-400 text-lg"></i>
             <span>3. Rescue Team Sent</span>
           </div>
-          <div id="step4" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-500 font-medium flex flex-col items-center gap-1.5">
-            <i class="fa-solid fa-flag-checkered text-slate-600 text-lg"></i>
+          <div id="step4" class="p-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 font-medium flex flex-col items-center gap-1.5">
+            <i class="fa-solid fa-flag-checkered text-slate-400 text-lg"></i>
             <span>4. Rescue Team Arrived</span>
           </div>
         </div>
       </div>
 
       <!-- Live Map -->
-      <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow-xl space-y-3">
-        <div class="flex justify-between items-center text-xs font-bold text-slate-300">
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex justify-between items-center text-xs font-bold text-slate-800">
           <span class="flex items-center gap-2"><i class="fa-solid fa-map-location-dot text-red-500"></i> Your Location & Live Rescue Vehicle Trajectory</span>
-          <span id="lastUpdatedText" class="text-[11px] font-normal text-slate-400">Updating live...</span>
+          <span id="lastUpdatedText" class="text-[11px] font-normal text-slate-500">Updating live...</span>
         </div>
-        <div id="trackMap" class="h-96 w-full rounded-xl border border-slate-800 shadow-inner z-10"></div>
+        <div id="trackMap" class="h-96 w-full rounded-xl border border-slate-200 shadow-sm z-10"></div>
       </div>
 
       <!-- Incident Details & Demands Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-3">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
             <i class="fa-solid fa-clipboard-list text-blue-400"></i> Your Reported Situation Details
           </h4>
           <div id="incidentDesc" class="text-xs text-slate-200 leading-relaxed font-medium bg-slate-950 p-4 rounded-xl border border-slate-800">
@@ -248,7 +248,7 @@
           </div>
         </div>
 
-        <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-3">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
           <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
             <i class="fa-solid fa-boxes-packing"></i> Requested Supplies & Items
           </h4>
@@ -260,7 +260,7 @@
       </div>
 
       <!-- Attached Evidence Media Gallery -->
-      <div id="evidenceMediaBox" class="hidden bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-3">
+      <div id="evidenceMediaBox" class="hidden bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
           <i class="fa-solid fa-photo-film text-indigo-400"></i> Your Uploaded Disaster Media Evidence
         </h4>

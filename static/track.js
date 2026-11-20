@@ -387,7 +387,7 @@ async function fetchIncidentTracker() {
           else if (/blanket|tent|shelter/.test(lower)) icon = 'fa-solid fa-campground text-teal-400';
           else if (/stretcher/.test(lower)) icon = 'fa-solid fa-bed text-indigo-400';
 
-          return `<span class="bg-slate-950 text-slate-200 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm">
+          return `<span class="bg-slate-950 text-slate-200 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm">
             <i class="${icon}"></i> ${item}
           </span>`;
         }).join('');
@@ -494,7 +494,7 @@ function renderEvidenceMedia(imageUrl, videoUrl) {
 
   images.forEach(imgSrc => {
     const card = document.createElement('div');
-    card.className = "relative rounded-xl overflow-hidden bg-black border border-slate-800 h-40";
+    card.className = "relative rounded-xl overflow-hidden bg-black border border-slate-200 h-40";
     card.innerHTML = `
       <img src="${imgSrc}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition" onclick="window.open('${imgSrc}', '_blank')">
       <span class="absolute top-2 left-2 bg-blue-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
@@ -506,7 +506,7 @@ function renderEvidenceMedia(imageUrl, videoUrl) {
 
   videos.forEach(vidSrc => {
     const card = document.createElement('div');
-    card.className = "relative rounded-xl overflow-hidden bg-black border border-slate-800 h-40";
+    card.className = "relative rounded-xl overflow-hidden bg-black border border-slate-200 h-40";
     card.innerHTML = `
       <video src="${vidSrc}" controls class="w-full h-full object-cover"></video>
       <span class="absolute top-2 left-2 bg-red-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">

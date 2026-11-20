@@ -78,7 +78,7 @@ async function fetchIncidentDetails() {
     // Needs Chips
     const needsContainer = document.getElementById('needsChipsContainer');
     if (inc.needs) {
-      needsContainer.innerHTML = inc.needs.split(',').map(n => `<span class="bg-slate-800 text-slate-200 px-2.5 py-1 rounded-lg border border-slate-700 font-medium">${n.trim()}</span>`).join('');
+      needsContainer.innerHTML = inc.needs.split(',').map(n => `<span class="bg-slate-100 text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 font-medium shadow-sm">${n.trim()}</span>`).join('');
     } else {
       needsContainer.innerHTML = `<span class="text-slate-500 italic">General Rescue Assistance</span>`;
     }
@@ -92,7 +92,7 @@ async function fetchIncidentDetails() {
       let mediaHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">';
       images.forEach(imgSrc => {
         mediaHtml += `
-          <div class="relative rounded-xl overflow-hidden bg-black border border-slate-800 max-h-56 flex items-center justify-center">
+          <div class="relative rounded-xl overflow-hidden bg-black border border-slate-200 shadow-sm max-h-56 flex items-center justify-center">
             <img src="${imgSrc}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition" onclick="window.open('${imgSrc}','_blank')">
             <span class="absolute top-2 left-2 bg-blue-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow">
               <i class="fa-solid fa-camera"></i> Photo
@@ -101,7 +101,7 @@ async function fetchIncidentDetails() {
       });
       videos.forEach(vidSrc => {
         mediaHtml += `
-          <div class="relative rounded-xl overflow-hidden bg-black border border-slate-800 max-h-56 flex items-center justify-center">
+          <div class="relative rounded-xl overflow-hidden bg-black border border-slate-200 shadow-sm max-h-56 flex items-center justify-center">
             <video src="${vidSrc}" controls class="w-full h-full object-cover"></video>
             <span class="absolute top-2 left-2 bg-red-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow">
               <i class="fa-solid fa-video"></i> Video

@@ -19,17 +19,17 @@
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
   <!-- Header -->
-  <header class="bg-slate-950 border-b border-slate-800 px-6 py-3.5 flex justify-between items-center sticky top-0 z-30 shadow-md">
+  <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex justify-between items-center sticky top-0 z-30 shadow-sm">
     <div class="flex items-center space-x-3">
-      <a href="/admin" class="text-slate-400 hover:text-white text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+      <a href="/admin" class="text-slate-700 hover:text-slate-900 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 font-semibold">
         <i class="fa-solid fa-arrow-left"></i> Back to Control Dashboard
       </a>
       <div>
-        <h1 class="text-base font-bold text-white flex items-center gap-2">
-          Incident Detail: <span id="codeTitle" class="font-mono text-yellow-300">INC-2026-0001</span>
+        <h1 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          Incident Detail: <span id="codeTitle" class="font-mono text-amber-600">INC-2026-0001</span>
         </h1>
       </div>
     </div>
@@ -38,10 +38,10 @@
       <a id="trackIncidentBtn" href="/track" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow transition flex items-center gap-1.5">
         <i class="fa-solid fa-location-crosshairs"></i> Track Live Rescue 📍
       </a>
-      <span id="severityBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+      <span id="severityBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
         Severity Level 4.7 / 5.0
       </span>
-      <span id="statusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">
+      <span id="statusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
         QUEUED
       </span>
     </div>
@@ -56,12 +56,12 @@
       <div class="lg:col-span-8 space-y-6">
 
         <!-- Situation Description & Needs Card -->
-        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-4 shadow-xl">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 shadow-sm">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
               <i class="fa-solid fa-align-left text-blue-400"></i> Situation Description
             </h3>
-            <p id="descriptionText" class="text-sm text-slate-200 mt-1 leading-relaxed bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+            <p id="descriptionText" class="text-sm text-slate-800 mt-1 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
               Loading incident description...
             </p>
           </div>
@@ -71,7 +71,7 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
               <i class="fa-solid fa-boxes-packing"></i> Requested Supplies & Items
             </h3>
-            <p id="demandsText" class="text-xs font-mono text-amber-200 mt-1 leading-relaxed bg-amber-950/40 p-3.5 rounded-xl border border-amber-800/60">
+            <p id="demandsText" class="text-xs font-mono text-amber-900 mt-1 leading-relaxed bg-amber-50 p-3.5 rounded-xl border border-amber-200 font-semibold">
               Loading requested items...
             </p>
           </div>
@@ -86,8 +86,8 @@
         </div>
 
         <!-- Scene Media Player -->
-        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-3 shadow-xl">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
             <i class="fa-solid fa-photo-film text-purple-400"></i> Attached Scene Photos & Videos
           </h3>
           <div id="mediaBox" class="bg-slate-900 rounded-xl p-3 flex justify-center items-center min-h-[220px]">
@@ -124,14 +124,14 @@
           <!-- Currently Assigned Unit Status Card -->
           <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-1 text-xs">
             <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider block">Assigned Response Vehicle</span>
-            <div id="assignedUnitDisplay" class="text-sm font-mono font-bold text-yellow-300">Dispatch Pending</div>
+            <div id="assignedUnitDisplay" class="text-sm font-mono font-bold text-amber-600">Dispatch Pending</div>
             <div id="assignedUnitSub" class="text-[11px] text-slate-400">No vehicle currently assigned.</div>
           </div>
 
           <!-- Manual Allocation Selection Dropdown -->
           <div class="space-y-2">
-            <label class="block text-xs font-semibold text-slate-300">Select Response Vehicle to Assign:</label>
-            <select id="unitSelect" class="w-full bg-slate-900 border border-slate-700 text-slate-100 text-xs px-3 py-2.5 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono">
+            <label class="block text-xs font-semibold text-slate-700">Select Response Vehicle to Assign:</label>
+            <select id="unitSelect" class="w-full bg-white border border-slate-300 text-slate-800 text-xs px-3 py-2.5 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono shadow-sm">
               <option value="">Loading response vehicles...</option>
             </select>
             <button id="manualAssignBtn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5 cursor-pointer">
@@ -147,7 +147,7 @@
 
           <!-- Auto-Assign Button -->
           <button id="aiAssignBtn" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i> Auto-Assign Rescue Units
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Auto-Assign Rescue Units
           </button>
 
           <div id="xaiBox" class="hidden bg-slate-900 p-3 rounded-xl border border-amber-500/30 text-xs font-mono space-y-1">
@@ -157,14 +157,14 @@
         </div>
 
         <!-- Reporter Information Card -->
-        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-3 shadow-xl text-xs">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 shadow-sm text-xs">
           <h3 class="font-bold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
             <i class="fa-solid fa-user-shield text-blue-400"></i> Reporter Information
           </h3>
           <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
             <div><span class="text-slate-400">Reporter Name:</span> <strong id="reporterName" class="text-white">Anonymous</strong></div>
-            <div><span class="text-slate-400">Phone Number:</span> <strong id="reporterPhone" class="text-yellow-300 font-mono">Not provided</strong></div>
-            <div><span class="text-slate-400">Report Time:</span> <span id="reportTime" class="text-slate-300">Just now</span></div>
+            <div><span class="text-slate-400">Phone Number:</span> <strong id="reporterPhone" class="text-amber-600 font-mono">Not provided</strong></div>
+            <div><span class="text-slate-400">Report Time:</span> <span id="reportTime" class="text-slate-600">Just now</span></div>
           </div>
         </div>
 

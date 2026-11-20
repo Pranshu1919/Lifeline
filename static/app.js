@@ -235,7 +235,7 @@ function renderMediaGallery() {
     grid.innerHTML = '';
     attachedMedia.forEach((item) => {
       const card = document.createElement('div');
-      card.className = "relative bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col gap-2 shadow-md";
+      card.className = "relative bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col gap-2 shadow-sm";
 
       let previewEl = '';
       if (item.type === 'image') {
@@ -259,10 +259,10 @@ function renderMediaGallery() {
       card.innerHTML = `
         ${previewEl}
         <div class="flex items-center justify-between text-[11px] text-slate-400 px-1">
-          <span class="truncate max-w-[130px] font-mono text-slate-300" title="${item.name}">${item.name}</span>
+          <span class="truncate max-w-[130px] font-mono text-slate-800 font-semibold" title="${item.name}">${item.name}</span>
           <span class="text-slate-500 font-mono">${item.sizeText}</span>
         </div>
-        <button type="button" class="w-full text-[11px] font-semibold text-red-400 hover:text-red-300 bg-red-950/40 hover:bg-red-950/80 py-1.5 rounded-lg border border-red-900/60 transition flex items-center justify-center gap-1 cursor-pointer" data-remove-id="${item.id}">
+        <button type="button" class="w-full text-[11px] font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 py-1.5 rounded-lg border border-red-200 transition flex items-center justify-center gap-1 cursor-pointer" data-remove-id="${item.id}">
           <i class="fa-solid fa-trash-can"></i> Remove
         </button>
       `;
@@ -674,10 +674,10 @@ function showOnlineModal(res, reportData) {
     document.getElementById('modalSub').innerText = `Nearest station "${res.station_name}" (${res.distance_km} km away) has immediately dispatched ${res.unit_type || res.assigned_unit}. ETA: ${res.travel_time_minutes} mins.`;
     document.getElementById('modalDetails').innerHTML = `
       <div><strong>Incident Code:</strong> ${code}</div>
-      <div><strong>Nearest Emergency Station:</strong> <span class="text-emerald-400 font-bold">${res.station_name}</span> (${res.distance_km} km)</div>
-      <div><strong>Dispatched Vehicle:</strong> <span class="text-indigo-300 font-bold">${res.assigned_unit} (${res.unit_type})</span></div>
-      <div><strong>Fastest Estimated Arrival:</strong> <span class="text-amber-300 font-bold">${res.travel_time_minutes} Minutes</span></div>
-      <div><strong>On-Board Supplies:</strong> <span class="text-slate-300 text-xs">${res.supplies_dispatched || 'Emergency Life-Saving Supplies'}</span></div>
+      <div><strong>Nearest Emergency Station:</strong> <span class="text-emerald-700 font-bold">${res.station_name}</span> (${res.distance_km} km)</div>
+      <div><strong>Dispatched Vehicle:</strong> <span class="text-indigo-700 font-bold">${res.assigned_unit} (${res.unit_type})</span></div>
+      <div><strong>Fastest Estimated Arrival:</strong> <span class="text-amber-700 font-bold">${res.travel_time_minutes} Minutes</span></div>
+      <div><strong>On-Board Supplies:</strong> <span class="text-slate-700 text-xs">${res.supplies_dispatched || 'Emergency Life-Saving Supplies'}</span></div>
       <div><strong>Reporter:</strong> ${myIncident.reporter_name} (${myIncident.reporter_phone})</div>
     `;
   } else {
