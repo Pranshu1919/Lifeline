@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: lifeline-disaster-response
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: NODE_ENV
+        value: production
+      - key: ML_HOST
+        value: 127.0.0.1
+      - key: ML_PORT
+        value: 5000
