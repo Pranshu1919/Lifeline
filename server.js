@@ -20,8 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Directories
 const STATIC_DIR = path.join(__dirname, 'static');
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
-const DB_PATH = path.join(__dirname, 'lifeline_enterprise.db');
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'lifeline_enterprise.db');
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -51,8 +51,8 @@ function callMLMicroservice(endpoint, payload) {
   return new Promise((resolve) => {
     const dataString = JSON.stringify(payload);
     const options = {
-      hostname: '127.0.0.1',
-      port: 5000,
+      hostname: process.env.ML_HOST || '127.0.0.1',
+      port: process.env.ML_PORT || 5000,
       path: endpoint,
       method: 'POST',
       headers: {
@@ -131,6 +131,7 @@ function broadcastWS(data) {
 app.get('/', (req, res) => res.sendFile(path.join(STATIC_DIR, 'index.html')));
 app.get('/track', (req, res) => res.sendFile(path.join(STATIC_DIR, 'track.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(STATIC_DIR, 'admin.html')));
+app.get('/incident', (req, res) => res.sendFile(path.join(STATIC_DIR, 'admin-incident.html')));
 app.get('/admin-incident', (req, res) => res.sendFile(path.join(STATIC_DIR, 'admin-incident.html')));
 
 // Citizen Emergency Intake API Endpoint (Supports Multiple Photos & Videos)

@@ -2,11 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, 'lifeline_enterprise.db');
-
-if (fs.existsSync(DB_PATH)) {
-  try { fs.unlinkSync(DB_PATH); } catch (e) {}
-}
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'lifeline_enterprise.db');
 
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) console.error('Error connecting to SQLite DB:', err);
@@ -107,7 +103,7 @@ db.serialize(() => {
 
   // Seed Emergency Stations
   const stmtStation = db.prepare(`
-    INSERT INTO emergency_stations (station_code, name, station_type, address, contact_number, latitude, longitude, stockpile_supplies, status)
+    INSERT OR IGNORE INTO emergency_stations (station_code, name, station_type, address, contact_number, latitude, longitude, stockpile_supplies, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
@@ -187,7 +183,7 @@ db.serialize(() => {
 
   // Seed Units (Attached to Stations with specialized capability tags and supplies payloads)
   const stmtUnit = db.prepare(`
-    INSERT INTO units (unit_code, station_code, station_name, type, capabilities, supplies_payload, capacity, speed_kmh, latitude, longitude, status)
+    INSERT OR IGNORE INTO units (unit_code, station_code, station_name, type, capabilities, supplies_payload, capacity, speed_kmh, latitude, longitude, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
@@ -330,7 +326,7 @@ db.serialize(() => {
 
   // Seed Shelters
   const stmtShelter = db.prepare(`
-    INSERT INTO shelters (shelter_code, name, latitude, longitude, total_capacity, occupied_beds, status)
+    INSERT OR IGNORE INTO shelters (shelter_code, name, latitude, longitude, total_capacity, occupied_beds, status)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
   stmtShelter.run('SHELTER-01', 'AKGEC Central Relief Camp', 28.6760, 77.5010, 250, 65, 'ACTIVE');
@@ -339,7 +335,7 @@ db.serialize(() => {
 
   // Seed Initial Dispatches & Incidents for demo
   const stmtInc = db.prepare(`
-    INSERT INTO incidents (incident_code, reporter_name, reporter_phone, description, demands, category, needs, text_severity, visual_severity, composite_severity, latitude, longitude, status, assigned_unit_code)
+    INSERT OR IGNORE INTO incidents (incident_code, reporter_name, reporter_phone, description, demands, category, needs, text_severity, visual_severity, composite_severity, latitude, longitude, status, assigned_unit_code)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   stmtInc.run(
@@ -362,7 +358,7 @@ db.serialize(() => {
 
   // Seed corresponding dispatch audit for INC-2026-0001
   const stmtDisp = db.prepare(`
-    INSERT INTO dispatches (incident_code, unit_code, station_code, station_name, distance_km, travel_time_minutes, supplies_dispatched, xai_rationale)
+    INSERT OR IGNORE INTO dispatches (incident_code, unit_code, station_code, station_name, distance_km, travel_time_minutes, supplies_dispatched, xai_rationale)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
   stmtDisp.run(

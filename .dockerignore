@@ -1,0 +1,21 @@
+# Git and dev artifacts
+.git
+.gitignore
+scratch/
+__pycache__/
+*.pyc
+
+# Heavy raw datasets (models are already trained and saved as .pt and .pkl)
+CrisisMMD_v2.0/
+uploads/*
+!uploads/.gitkeep
+
+# Docs and synopsis generation scripts not needed at runtime
+*.docx
+generate_*.py
+build_*.py
+create_*.py
+figures/
+
+# Local logs
+*.log
