@@ -1,3 +1,73 @@
+
+// Official Authority Command Center Authentication Guard
+function checkAdminAuth() {
+  const authStr = sessionStorage.getItem('lifeline_admin_auth');
+  const modal = document.getElementById('adminAuthModal');
+  const badge = document.getElementById('officerStatusBadge');
+  const badgeName = document.getElementById('officerBadgeName');
+
+  if (!authStr) {
+    if (modal) modal.classList.remove('hidden');
+    if (badge) badge.classList.add('hidden');
+    return false;
+  }
+  try {
+    const data = JSON.parse(authStr);
+    if (modal) modal.classList.add('hidden');
+    if (badge) {
+      badge.classList.remove('hidden');
+      badge.classList.add('flex');
+      if (badgeName) badgeName.innerText = (data.officer && data.officer.badge_id) || 'OFFICER ACTIVE';
+    }
+    return true;
+  } catch (e) {
+    sessionStorage.removeItem('lifeline_admin_auth');
+    if (modal) modal.classList.remove('hidden');
+    return false;
+  }
+}
+
+async function handleAdminLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('authUsername').value.trim();
+  const password = document.getElementById('authPassword').value.trim();
+  const errorMsg = document.getElementById('authErrorMsg');
+  const btn = document.getElementById('authSubmitBtn');
+
+  errorMsg.classList.add('hidden');
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verifying Credentials...`;
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok && data.authenticated) {
+      sessionStorage.setItem('lifeline_admin_auth', JSON.stringify(data));
+      window.location.reload();
+    } else {
+      errorMsg.innerText = data.message || "Access Denied: Invalid Officer Credentials.";
+      errorMsg.classList.remove('hidden');
+    }
+  } catch (err) {
+    errorMsg.innerText = "Authentication service connection error. Please try again.";
+    errorMsg.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-key"></i> Authenticate & Access Command Center`;
+  }
+}
+
+function handleAdminLogout() {
+  if (confirm("Confirm signing out of Emergency Command Center?")) {
+    sessionStorage.removeItem('lifeline_admin_auth');
+    window.location.reload();
+  }
+}
+
 // LifeLine Official Emergency Control Center Admin JS Engine
 let adminMap;
 let incidentMarkers = [];
@@ -8,6 +78,12 @@ let activeUnits = [];
 let activeShelters = [];
 
 document.addEventListener("DOMContentLoaded", () => {
+  const isAuthed = checkAdminAuth();
+  const loginForm = document.getElementById('adminLoginForm');
+  if (loginForm) loginForm.addEventListener('submit', handleAdminLogin);
+  const logoutBtn = document.getElementById('adminLogoutBtn');
+  if (logoutBtn) logoutBtn.addEventListener('click', handleAdminLogout);
+  if (!isAuthed) return;
   initAdminMap();
   fetchStats();
   fetchIncidents();

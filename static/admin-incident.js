@@ -1,3 +1,9 @@
+// Authority Authentication Guard: Block unauthorized citizens
+if (!sessionStorage.getItem('lifeline_admin_auth')) {
+  alert("Restricted Access: You must log in via the Authority Command Center to view or allocate rescue resources.");
+  window.location.href = '/admin';
+}
+
 // LifeLine Incident Detail & Human Manual Resource Manager JS Engine
 let detailMap;
 let incidentMarker = null;

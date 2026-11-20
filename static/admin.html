@@ -26,6 +26,56 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
 
+  <!-- Official Authority Login Gate Modal (Restricted Access) -->
+  <div id="adminAuthModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl shadow-red-950/50 space-y-6 text-center">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-600 flex items-center justify-center text-white text-2xl mx-auto shadow-lg shadow-red-600/40">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-extrabold text-white tracking-tight">Authority Command Center</h2>
+        <p class="text-xs text-slate-400 mt-1">Official Emergency Personnel Only • Disaster Dispatch Control</p>
+      </div>
+
+      <div class="bg-red-950/40 border border-red-800/50 rounded-2xl p-3.5 text-left flex items-start gap-2.5 text-xs text-red-300">
+        <i class="fa-solid fa-triangle-exclamation text-red-400 mt-0.5"></i>
+        <span>Restricted Infrastructure: Access is strictly limited to authorized disaster responders, police, NDRF, and hospital coordinators.</span>
+      </div>
+
+      <form id="adminLoginForm" class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Officer Badge ID / Username</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-id-badge"></i></span>
+            <input type="text" id="authUsername" required placeholder="e.g. admin or COMMANDER-01" class="w-full pl-9 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-red-500 font-mono">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Security Passkey</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" id="authPassword" required placeholder="Enter Authority Passkey" class="w-full pl-9 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-red-500 font-mono">
+          </div>
+          <p class="text-[10px] text-slate-500 mt-1 font-mono">Default credentials: admin / lifeline@2026</p>
+        </div>
+
+        <div id="authErrorMsg" class="hidden text-xs text-red-400 bg-red-950/60 border border-red-800/80 p-2.5 rounded-xl font-medium"></div>
+
+        <button type="submit" id="authSubmitBtn" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold py-3 px-4 rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+          <i class="fa-solid fa-key"></i> Authenticate & Access Command Center
+        </button>
+      </form>
+
+      <div class="pt-2 border-t border-slate-800 text-center">
+        <a href="/" class="text-xs text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-arrow-left"></i> Citizen Seeking Help? Go to Citizen Portal
+        </a>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Header / Navigation -->
   <header class="bg-slate-950 border-b border-slate-800 px-6 py-3.5 flex flex-wrap justify-between items-center gap-3 sticky top-0 z-30 shadow-md">
     <div class="flex items-center space-x-3">
@@ -51,6 +101,13 @@
       </button>
       <button onclick="fetchIncidents()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 transition">
         <i class="fa-solid fa-rotate mr-1"></i> Refresh Data
+      </button>
+      <div id="officerStatusBadge" class="hidden items-center gap-1.5 bg-emerald-950/70 border border-emerald-800/60 text-emerald-400 text-xs px-3 py-1.5 rounded-xl font-bold font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="officerBadgeName">COMMANDER-01</span>
+      </div>
+      <button id="adminLogoutBtn" class="bg-red-950/50 hover:bg-red-900/60 text-red-300 py-2 px-3 rounded-xl text-xs font-semibold border border-red-800/50 transition flex items-center gap-1 cursor-pointer">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
       </button>
     </div>
   </header>
