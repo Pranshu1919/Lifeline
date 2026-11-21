@@ -30,6 +30,11 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 app.use('/static', express.static(STATIC_DIR));
 app.use('/uploads', express.static(UPLOADS_DIR));
 
+// Health check endpoint for cloud monitoring & Render deployment
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'lifeline', timestamp: new Date().toISOString() });
+});
+
 // Configure Multer for Multiple File Uploads (Photos + Videos)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOADS_DIR),

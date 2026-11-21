@@ -6,22 +6,25 @@ LifeLine is an enterprise-grade AI-powered disaster management platform designed
 
 ## 🌟 Architecture & Key Features
 
-* 🌐 **Dual Independent Portals**:
-  * **Citizen Disaster Reporting Portal (`http://localhost:8000`)**: Emergency reporting, camera photo/video capture, high-accuracy GPS, and citizen rescue tracker (`/track`).
-  * **Authority Command Center (`http://localhost:8001`)**: Real-time severity dashboard (`/`), incident detail view (`/incident`), and human commander manual resource allocation override.
-* 🤖 **Multi-Modal AI & Computer Vision Microservice (`http://127.0.0.1:5000`)**:
-  * **CrisisMMD NLP Triage**: 8-class humanitarian urgency classifier (81.09% Accuracy).
-  * **PyTorch MobileNetV3 Image Authenticity Model**: Detects real vs. fake/off-topic photos (80.87% Validation Accuracy).
-  * **PyTorch MobileNetV3 Visual Damage Model**: Scores structural damage severity ($0.20 \to 0.95$).
-  * **SciPy MILP Resource Dispatch Engine**: Sub-50ms optimal vehicle-to-incident allocation.
+* 🌐 **Unified Enterprise Web Server (`PORT: 8000`)**:
+  * **Citizen Disaster Reporting Portal (`/`)**: High-contrast Light Mode emergency reporting, multi-photo/video camera capture, high-accuracy GPS, and instant AI triage.
+  * **Citizen Rescue Tracker (`/track`)**: Public tracking portal displaying live assigned vehicle distance, route map, and ETA.
+  * **Authority Command Center (`/admin`)**: Passkey-protected tactical operations center (`Badge: COMMANDER-01` or `admin`, `Passkey: lifeline@2026`) with live WebSocket incidents feed and interactive heatmaps.
+  * **Emergency Dispatch Optimizer (`/incident`)**: Automated Haversine nearest-depot station locator and MILP vehicle allocation engine.
+* 🤖 **Multi-Modal AI & Computer Vision Microservice (`PORT: 5000`)**:
+  * **CrisisMMD NLP Triage**: 8-class humanitarian urgency classifier (84.05% Accuracy, F1: 0.8361).
+  * **PyTorch MobileNetV3 Image Authenticity Model**: Detects real vs. fake/off-topic photos (79.86% Accuracy).
+  * **PyTorch MobileNetV3 Visual Damage Model**: Scores structural damage severity (Severe, Mild, Little/None).
+  * **SciPy MILP Resource Dispatch Engine**: Sub-10ms global mathematically optimal vehicle-to-incident allocation.
 * 📡 **Zero-Network Offline PWA**: Local IndexedDB queueing with auto-sync when network returns.
+* 💾 **Shared SQLite Enterprise Database**: Real-time bi-directional data flow between citizen distress reports and official authority response.
 
 ---
 
 ## 🚀 Quick Start Guide
 
 ### 1. Prerequisites
-* **Node.js**: v16+
+* **Node.js**: v18+
 * **Python**: v3.9+
 
 ---
@@ -41,7 +44,7 @@ pip install -r requirements.txt
 ---
 
 ### 3. Initialize SQLite Database
-Initialize the database tables and seed rescue vehicles and shelters:
+Initialize the database tables and seed emergency stations, rescue vehicles, and shelters:
 ```bash
 node db_setup.js
 ```
@@ -55,14 +58,9 @@ node db_setup.js
 python ml_service.py
 ```
 
-#### Step B: Start Citizen Disaster Reporting Portal (Port 8000)
+#### Step B: Start Unified Enterprise Server (Port 8000)
 ```bash
-node citizen_server.js
-```
-
-#### Step C: Start Authority Command Center (Port 8001)
-```bash
-node admin_server.js
+node server.js
 ```
 
 ---
@@ -71,29 +69,21 @@ node admin_server.js
 
 * 🌐 **Citizen Reporting Portal**: [http://localhost:8000/](http://localhost:8000/)
 * 📍 **Citizen Rescue Tracker**: [http://localhost:8000/track](http://localhost:8000/track)
-* 🛡️ **Authority Command Center**: [http://localhost:8001/](http://localhost:8001/)
-* 📍 **Authority Rescue Tracker**: [http://localhost:8001/track](http://localhost:8001/track)
+* 🛡️ **Authority Command Center**: [http://localhost:8000/admin](http://localhost:8000/admin) *(Passkey: `lifeline@2026`)*
+* 📍 **Incident Dispatch**: [http://localhost:8000/incident](http://localhost:8000/incident)
 
 ---
 
-## 🧠 Training Machine Learning Models (Optional)
+## ☁️ Cloud Deployment
 
-To re-train the models on the CrisisMMD v2.0 dataset:
-
-1. **Train NLP Text Classification Pipeline**:
-   ```bash
-   python train_crisismmd_model.py
-   ```
-2. **Train PyTorch Vision Models**:
-   ```bash
-   python train_crisismmd_vision.py
-   ```
+LifeLine is fully containerized with a production [`Dockerfile`](./Dockerfile) and pre-configured for 1-click cloud deployment on Render.com or Railway.
+Refer to [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) for complete cloud setup instructions.
 
 ---
 
 ## 👥 Project Team & Credits
 
-* **Vijay Katiyar** (2300270130205) – ML Engineer 1 (NLP, Deduplication, Urgency Rating)
-* **Priyanshu Kushwaha** (2300270130136) – ML Engineer 2 (Computer Vision, Spatial Optimization)
-* **Pranshu** (2300270130129) – Full-Stack Developer (Web App, GIS Maps, Express Backend)
-* **Guide**: Dr. Sunil Kumar (Professor, Dept. of IT, Ajay Kumar Garg Engineering College, Ghaziabad)
+* **Vijay Katiyar** (2300270130205) – ML Engineer (NLP Triage, Urgency Scoring & Vision Models)
+* **Priyanshu Kushwaha** (2300270130136) – ML & Optimization Engineer (Spatial Distance & MILP Solver)
+* **Pranshu** (2300270130129) – Full-Stack Developer (Web App, GIS Maps, Express & WebSocket Backend)
+* **Project Guide**: Dr. Sunil Kumar (Professor, Department of Computer Science & Engineering, AKGEC)

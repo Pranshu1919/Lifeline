@@ -1,10 +1,12 @@
 services:
   - type: web
     name: lifeline-disaster-response
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
+    dockerContext: .
     plan: free
     region: singapore
+    healthCheckPath: /health
     envVars:
       - key: PORT
         value: 8000
