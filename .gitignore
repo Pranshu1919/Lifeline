@@ -12,6 +12,12 @@ uploads/*
 # Datasets
 CrisisMMD_v2.0/
 
+# Documents & Binaries
+documents/
+document/
+*.docx
+*.pdf
+
 # OS / Environment files
 .DS_Store
 Thumbs.db
