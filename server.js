@@ -664,7 +664,7 @@ wss.on('connection', (ws) => {
   ws.send(JSON.stringify({ event: 'CONNECTED', message: 'LifeLine Server Active' }));
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
   console.log(`🚀 LifeLine Server running on port ${PORT}`);
   console.log(`🌐 Public Website Homepage: http://localhost:${PORT}/`);
